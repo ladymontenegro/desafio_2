@@ -4,4 +4,5 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+        funciones_carga_archivos.cpp \
         main.cpp
