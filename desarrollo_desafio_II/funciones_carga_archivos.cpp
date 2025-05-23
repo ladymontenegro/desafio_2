@@ -3,6 +3,7 @@
 #include <string>
 using namespace std;
 
+//FUNCIONES AUXILIARES
 string obtenerDato(const string& linea, size_t& inicio) {
     size_t fin = linea.find(',', inicio);
     string atributo;
@@ -27,4 +28,8 @@ bool esDocumento(const string& lineaArchivo, size_t& inicio){
     }
 
     return documento;
+}
+
+bool puedeAgregar(short cantidadActual, short limite) { //funcion de monitoreo de tamanio
+    return cantidadActual < limite;
 }
