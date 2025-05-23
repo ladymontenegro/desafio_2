@@ -16,3 +16,15 @@ string obtenerDato(const string& linea, size_t& inicio) {
     }
     return atributo;
 }
+
+bool esDocumento(const string& lineaArchivo, size_t& inicio){
+    bool documento = false;
+    size_t fin = lineaArchivo.find(',', inicio);
+    string identificador = lineaArchivo.substr(inicio, fin - inicio);
+
+    if((identificador.length()) == 10){
+        documento = true;
+    }
+
+    return documento;
+}
