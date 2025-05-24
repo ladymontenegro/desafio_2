@@ -60,6 +60,7 @@ int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitri
 
             //crear y agregar alojamiento
             Alojamiento* nuevoAlojamiento = new Alojamiento(nombre, amenidades, codigoAlojamiento, municipio, departamento, tipo, direccion, documento, precioNoche);
+            //reserva memoria para un Anfitrion y retorna su dirección (puntero de tipo Anfitrion*).
 
             if (arregloAnfitriones[anfitrionesCargados-1] -> agregarAlojamiento(nuevoAlojamiento)) {
                 alojamientosCargados++;
@@ -85,12 +86,11 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
 
     short huespedesCargados = 0;
 
-    if (!puedeAgregar(huespedesCargados, maximoHuespedes)) {
-        cerr << "Limite de anfitriones alcanzado (" << maximoHuespedes << ")\n";
-        break;
-    }
-
     while(getline(archivo, linea)){
+        if (!puedeAgregar(huespedesCargados, maximoHuespedes)) {
+            cerr << "Limite de anfitriones alcanzado (" << maximoHuespedes << ")\n";
+            break;
+        }
         size_t inicio = 0;
 
         //Rrecordar agregar las excepciones !!!
@@ -100,7 +100,7 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
         unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea, inicio)));
 
         arregloHuespedes[huespedesCargados] = new Huesped(nombre, documento, puntuacion, antiguedad);
-        //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*).
+        //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*)
         huespedesCargados++;
     }
 
