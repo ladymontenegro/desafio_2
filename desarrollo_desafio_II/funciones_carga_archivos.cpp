@@ -4,7 +4,7 @@
 using namespace std;
 
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES
-void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitriones) {
+int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitriones) {
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()){
         return -1;
@@ -15,13 +15,20 @@ void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitr
     bool anfitrionActivo = false;
     string linea;
 
+    if (arregloAnfitriones == nullptr) {
+        arregloAnfitriones = new Anfitrion*[maximoAnfitriones];
+        for (int i = 0; i < maximoAnfitriones; ++i) {
+            arregloAnfitriones[i] = nullptr;
+        }
+    }
+
     while (getline(archivo, linea)) {
         size_t inicio = 0;
 
         if (esDocumento(linea, inicio)) { //pa ver si es anfitrion
             if (!puedeAgregar(anfitrionesCargados, maximoAnfitriones)) {
                 cerr << "Limite de anfitriones alcanzado (" << maximoAnfitriones << ")\n";
-                continue;
+                break;
             }
 
             //obtener atributos de anfitrion
@@ -37,10 +44,11 @@ void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitr
         else if (anfitrionActivo) {  //si no es anfitrion, es alojamiento
             if (!puedeAgregar(alojamientosCargados, maximoAlojamientosPorAnfitrion)) {
                 cerr << "Límite de alojamientos alcanzado para anfitrión " << arregloAnfitriones[anfitrionesCargados-1] -> getDocumento()<< " (" << alojamientosPorAnfitrion << ")\n";
-                continue;
+                break;
             }
 
             //obtener atributos de alojamiento
+            string documento = arregloAnfitriones[anfitrionesCargados-1] -> getDocumento();
             string codigoAlojamiento = obtenerDato(linea, inicio);
             string nombre = obtenerDato(linea, inicio);
             string municipio = obtenerDato(linea, inicio);
