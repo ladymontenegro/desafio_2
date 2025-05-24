@@ -4,7 +4,7 @@
 using namespace std;
 
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES
-void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion* arregloAnfitriones[]) {
+void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitriones) {
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()){
         return -1;
@@ -19,15 +19,15 @@ void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion* arregloAnfitri
         size_t inicio = 0;
 
         if (esDocumento(linea, inicio)) { //pa ver si es anfitrion
-            if (!puedeAgregar(anfitrionesCargados, anfitriones)) {
-                cerr << "Limite de anfitriones alcanzado (" << anfitriones << ")\n";
+            if (!puedeAgregar(anfitrionesCargados, maximoAnfitriones)) {
+                cerr << "Limite de anfitriones alcanzado (" << maximoAnfitriones << ")\n";
                 continue;
             }
 
             //obtener atributos de anfitrion
             string documento = obtenerDato(linea, inicio);
             float puntuacion = stof(obtenerDato(linea, inicio));
-            short antiguedad = static_cast<short>(stoi(obtenerDato(linea, inicio)));
+            unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea, inicio)));
 
             arregloAnfitriones[anfitrionesCargados] = new Anfitrion(documento, puntuacion, antiguedad);
             anfitrionesCargados++;
@@ -35,7 +35,7 @@ void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion* arregloAnfitri
             anfitrionActivo = true;
         }
         else if (anfitrionActivo) {  //si no es anfitrion, es alojamiento
-            if (!puedeAgregar(alojamientosCargados, alojamientosPorAnfitrion)) {
+            if (!puedeAgregar(alojamientosCargados, maximoAlojamientosPorAnfitrion)) {
                 cerr << "Límite de alojamientos alcanzado para anfitrión " << arregloAnfitriones[anfitrionesCargados-1] -> getDocumento()<< " (" << alojamientosPorAnfitrion << ")\n";
                 continue;
             }
@@ -64,6 +64,56 @@ void cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion* arregloAnfitri
     archivo.close();
 }
 
+int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes){
+    string linea = "";
+    ifstream archivo(rutaArchivo);
+    if(!archivo.is_open()){
+        return -1;
+    }
+
+    if (arregloHuespedes == nullptr) {
+        arregloHuespedes = new Huesped*[maximoHuespedes];
+    }
+
+    short huespedesCargados = 0;
+
+    if (!puedeAgregar(huespedesCargados, maximoHuespedes)) {
+        cerr << "Limite de anfitriones alcanzado (" << maximoHuespedes << ")\n";
+        break;
+    }
+
+    while(getline(archivo, linea)){
+        size_t inicio = 0;
+
+        //Rrecordar agregar las excepciones !!!
+        string documento = obtenerDato(linea, inicio);
+        string nombre = obtenerDato(linea, inicio);
+        float puntuacion = stof(obtenerDato(linea, inicio));
+        unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea, inicio)));
+
+        arregloHuespedes[huespedesCargados] = new Huesped(nombre, documento, puntuacion, antiguedad);
+        //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*).
+        huespedesCargados++;
+    }
+
+    return huespedesCargados;
+}
+
+void cargarDatosReservas(string& rutaArchivo){
+    ifstream archivo(rutaArchivo);
+    if(!archivo.is_open()){
+        return -1;
+    }
+
+    //Leemos la reserva, extraemos el dato del huesped y del alojamiento y por partes
+    //separadas buscamos en el arreglo de alojamiento y de huespedes
+    //Busquemo primero en alojamientos
+
+    //Cuando se este vinculando las reservas del huesped con las del alojamiento,
+    //hacer una funcion de tipo merge-sort para que sus reserves queden organizadas
+    //de la fecha mas cercana a la lejana, al igual que con el alojamiento
+}
+
 //FUNCIONES PARA CARGA DE DATOS EN ARCHIVOS
 
 //FUNCIONES AUXILIARES
@@ -81,10 +131,10 @@ string obtenerDato(const string& linea, size_t& inicio) {
     return atributo;
 }
 
-bool esDocumento(const string& lineaArchivo, size_t& inicio){
+bool esDocumento(const string& linea, size_t& inicio){
     bool documento = false;
-    size_t fin = lineaArchivo.find(',', inicio);
-    string identificador = lineaArchivo.substr(inicio, fin - inicio);
+    size_t fin = linea.find(',', inicio);
+    string identificador = linea.substr(inicio, fin - inicio);
 
     if((identificador.length()) == 10){
         documento = true;
