@@ -3,21 +3,23 @@
 #include <string>
 using namespace std;
 
+
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES
-int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitriones) {
+short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitriones) {
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()){
         return -1;
     }
 
+    char delimitador = ',';
     short anfitrionesCargados = 0;
     short alojamientosCargados = 0;
     bool anfitrionActivo = false;
     string linea;
 
     if (arregloAnfitriones == nullptr) {
-        arregloAnfitriones = new Anfitrion*[maximoAnfitriones];
-        for (int i = 0; i < maximoAnfitriones; ++i) {
+        arregloAnfitriones = new Anfitrion*[capacidadAnfitriones];
+        for (int i = 0; i < capacidadAnfitriones; ++i) {
             arregloAnfitriones[i] = nullptr;
         }
     }
@@ -25,16 +27,16 @@ int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitri
     while (getline(archivo, linea)) {
         size_t inicio = 0;
 
-        if (esDocumento(linea, inicio)) { //pa ver si es anfitrion
-            if (!puedeAgregar(anfitrionesCargados, maximoAnfitriones)) {
-                cerr << "Limite de anfitriones alcanzado (" << maximoAnfitriones << ")\n";
+        if (esDocumento(linea,inicio)) { //pa ver si es anfitrion
+            if (!puedeAgregar(anfitrionesCargados, capacidadAnfitriones)) {
+                cerr << "Limite de anfitriones alcanzado (" << capacidadAnfitriones << ")\n";
                 break;
             }
 
             //obtener atributos de anfitrion
-            string documento = obtenerDato(linea, inicio);
-            float puntuacion = stof(obtenerDato(linea, inicio));
-            unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea, inicio)));
+            string documento = obtenerDato(linea,inicio,delimitador);
+            float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
+            unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
 
             arregloAnfitriones[anfitrionesCargados] = new Anfitrion(documento, puntuacion, antiguedad);
             anfitrionesCargados++;
@@ -42,21 +44,21 @@ int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitri
             anfitrionActivo = true;
         }
         else if (anfitrionActivo) {  //si no es anfitrion, es alojamiento
-            if (!puedeAgregar(alojamientosCargados, maximoAlojamientosPorAnfitrion)) {
+            if (!puedeAgregar(alojamientosCargados, capacidadAlojamientosPorAnfitrion)) {
                 cerr << "Límite de alojamientos alcanzado para anfitrión " << arregloAnfitriones[anfitrionesCargados-1] -> getDocumento()<< " (" << alojamientosPorAnfitrion << ")\n";
                 break;
             }
 
             //obtener atributos de alojamiento
             string documento = arregloAnfitriones[anfitrionesCargados-1] -> getDocumento();
-            string codigoAlojamiento = obtenerDato(linea, inicio);
-            string nombre = obtenerDato(linea, inicio);
-            string municipio = obtenerDato(linea, inicio);
-            string departamento = obtenerDato(linea, inicio);
-            string precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea, inicio)));
-            string tipo = obtenerDato(linea, inicio);
-            string direccion = obtenerDato(linea, inicio);
-            string amenidades = obtenerDato(linea, inicio);
+            string codigoAlojamiento = obtenerDato(linea,inicio,delimitador);
+            string nombre = obtenerDato(linea,inicio,delimitador);
+            string municipio = obtenerDato(linea,inicio,delimitador);
+            string departamento = obtenerDato(linea,inicio,delimitador);
+            string precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
+            string tipo = obtenerDato(linea,inicio,delimitador);
+            string direccion = obtenerDato(linea,inicio,delimitador);
+            string amenidades = obtenerDato(linea,inicio,delimitador);
 
             //crear y agregar alojamiento
             Alojamiento* nuevoAlojamiento = new Alojamiento(nombre, amenidades, codigoAlojamiento, municipio, departamento, tipo, direccion, documento, precioNoche);
@@ -75,31 +77,32 @@ int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitri
     return anfitrionesCargados;
 }
 
-int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes){
+int cargarDatosHuespedes(const string& rutaArchivo, Huesped** arregloHuespedes){
     string linea = "";
+    char delimitador = ',';
     ifstream archivo(rutaArchivo);
     if(!archivo.is_open()){
         return -1;
     }
 
     if (arregloHuespedes == nullptr) {
-        arregloHuespedes = new Huesped*[maximoHuespedes];
+        arregloHuespedes = new Huesped*[capacidadHuespedes];
     }
 
     short huespedesCargados = 0;
 
     while(getline(archivo, linea)){
-        if (!puedeAgregar(huespedesCargados, maximoHuespedes)) {
-            cerr << "Limite de anfitriones alcanzado (" << maximoHuespedes << ")\n";
+        if (!puedeAgregar(huespedesCargados, capacidadHuespedes)) {
+            cerr << "Limite de anfitriones alcanzado (" << capacidadHuespedes << ")\n";
             break;
         }
         size_t inicio = 0;
 
         //Rrecordar agregar las excepciones !!!
-        string documento = obtenerDato(linea, inicio);
-        string nombre = obtenerDato(linea, inicio);
-        float puntuacion = stof(obtenerDato(linea, inicio));
-        unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea, inicio)));
+        string documento = obtenerDato(linea,inicio,delimitador);
+        string nombre = obtenerDato(linea,inicio,delimitador);
+        float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
+        unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
 
         arregloHuespedes[huespedesCargados] = new Huesped(nombre, documento, puntuacion, antiguedad);
         //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*)
@@ -109,25 +112,88 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
     return huespedesCargados;
 }
 
-int cargarDatosReservas(string& rutaArchivo){
+int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes){
     ifstream archivo(rutaArchivo);
     if(!archivo.is_open()){
         return -1;
     }
 
-    //Leemos la reserva, extraemos el dato del huesped y del alojamiento y por partes
-    //separadas buscamos en el arreglo de alojamiento y de huespedes
-    //Busquemo primero en alojamientos
+    if(arregloReservas == nullptr){
+        arregloReservas = new Reserva*[capacidadReservasGlobales];
+        for(short i = 0; i < capacidadReservasGlobales; i++){
+            arregloReservas[i] = nullptr;
+        }
+    }
 
-    //Cuando se este vinculando las reservas del huesped con las del alojamiento,
-    //hacer una funcion de tipo merge-sort para que sus reserves queden organizadas
-    //de la fecha mas cercana a la lejana, al igual que con el alojamiento
+    char delimitador = ',';
+    char character = '-';
+    string linea = "";
+    string codigoAlojamiento;
+    short indiceAnfitrion = 0;
+    short indiceAlojamiento = 0;
+    short indiceHuesped = 0;
+    short reservasCargadas = 0;
+    short capacidadReservasGlobales = 0;
+    bool alojamientoActivo = false;
+
+    while(getline(archivo, linea)){
+        size_t inicio = 0;
+        Alojamiento* alojamientoActual = nullptr;
+        Huesped* huespedActual = nullptr;
+
+        if((linea.length()) == 4){
+            codigoAlojamiento = linea;
+            bool codigoEncontrado = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, cantidadAnfitriones, indiceAnfitrion, indiceAlojamiento);
+            alojamientoActivo = codigoEncontrado;
+        }
+
+        else if(alojamientoActivo){
+            string _fechaEntrada = obtenerDato(linea,inicio,delimitador);
+            Fecha fechaEntrada = crearFecha(_fechaEntrada);
+            string codigoReserva = obtenerDato(linea,inicio,delimitador);
+            string documentoHuesped = obtenerDato(linea,inicio,delimitador);
+            unsigned short estadiaNoches = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
+            string metodoPago = obtenerDato(linea,inicio,delimitador);
+            string _fechaPago = obtenerDato(linea,inicio,delimitador);
+            Fecha fechaPago = crearFecha(_fechaPago);
+            unsigned int montoPago= stoi(obtenerDato(linea,inicio,delimitador));
+            string inquietudes = obtenerDato(linea,inicio,delimitador);
+
+            indiceHuesped = buscarHuespedPorDocumento(arregloHuespedes, documentoHuesped, cantidadHuespedes);
+            if (indiceHuesped != -1) {
+                huespedActual = arregloHuespedes[indiceHuesped];
+            }
+
+            Anfitrion* anfitrion = arregloAnfitriones[indiceAnfitrion];
+            if (anfitrion != nullptr) {
+                alojamientoActual = anfitrion -> getAlojamiento(indiceAlojamiento);
+            }
+
+            if(alojamientoActual != nullptr && huespedActual != nullptr){
+                //se instancia el objeto
+                Reserva* reserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago, estadiaNoches, montoPago, huespedActual, alojamientoActual);
+
+                //se apunta la reserva a sus respectivos alojamiento y huesped
+                alojamientoActual -> agregarReserva(reserva);
+                huespedActual -> agregarReserva(reserva);
+
+                if (reservasCargadas < capacidadReservasGlobales) {
+                    //se agrega la reserva en el arreglo general de reservas
+                    arregloReservas[reservasCargadas] = reserva;
+                    reservasCargadas++;
+                } else {
+                    // Manejar error: arreglo lleno
+                }
+            }
+        }
+    }
+    return reservasCargadas;
 }
 
 //FUNCIONES PARA CARGA DE DATOS EN ARCHIVOS
 
 //FUNCIONES AUXILIARES
-string obtenerDato(const string& linea, size_t& inicio) {
+string obtenerDato(const string& linea, size_t& inicio, char delimitador) {
     size_t fin = linea.find(',', inicio);
     string atributo;
 
@@ -143,7 +209,7 @@ string obtenerDato(const string& linea, size_t& inicio) {
 
 bool esDocumento(const string& linea, size_t& inicio){
     bool documento = false;
-    size_t fin = linea.find(',', inicio);
+    size_t fin = linea.find(delimitador, inicio);
     string identificador = linea.substr(inicio, fin - inicio);
 
     if((identificador.length()) == 10){
@@ -157,7 +223,7 @@ bool puedeAgregar(short cantidadActual, short limite) { //funcion de monitoreo d
     return cantidadActual < limite;
 }
 
-unsigned short buscarHuespedPorDocumento(Huesped** arregloHuespedes, const string &documento, const unsigned short &cantidadHuespedes){
+short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes){
     for(short i = 0; i < cantidadHuespedes; i++){
         if(arregloHuespedes[i] -> getDocumento == documento){
             return i;
@@ -166,7 +232,7 @@ unsigned short buscarHuespedPorDocumento(Huesped** arregloHuespedes, const strin
     return -1;
 }
 
-bool buscarAlojamientoPorCodigo(Anfitrion** arregloAnfitriones, const string &codigo, const unsigned short &cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
+bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
     cout << si;
     for(short i = 0; i < cantidadAnfitriones; i++){
         for(short j = 0; j < arregloAnfitriones[i] -> getCantidadAlojamientos; j++){
@@ -180,10 +246,14 @@ bool buscarAlojamientoPorCodigo(Anfitrion** arregloAnfitriones, const string &co
     return false;
 }
 
+Fecha crearFecha(const string &fechaStr){
+    size_t inicio = 0;
+    const char delimitador = '-';
+    unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+    unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+    unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
 
+    Fecha fechaCreada(dia, mes, anio);
 
-
-
-
-
-
+    return fechaCreada;
+}
