@@ -166,6 +166,20 @@ unsigned short buscarHuespedPorDocumento(Huesped** arregloHuespedes, const strin
     return -1;
 }
 
+bool buscarAlojamientoPorCodigo(Anfitrion** arregloAnfitriones, const string &codigo, const unsigned short &cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
+    cout << si;
+    for(short i = 0; i < cantidadAnfitriones; i++){
+        for(short j = 0; j < arregloAnfitriones[i] -> getCantidadAlojamientos; j++){
+            if((arregloAnfitriones[i] -> getAlojamiento(j) -> getCodigo) == codigo){
+                indiceAnfitrion = i;
+                indiceAlojamiento = j;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 
 
