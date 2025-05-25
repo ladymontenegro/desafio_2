@@ -71,6 +71,8 @@ int cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion** arregloAnfitri
     }
 
     archivo.close();
+
+    return anfitrionesCargados;
 }
 
 int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes){
@@ -107,7 +109,7 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
     return huespedesCargados;
 }
 
-void cargarDatosReservas(string& rutaArchivo){
+int cargarDatosReservas(string& rutaArchivo){
     ifstream archivo(rutaArchivo);
     if(!archivo.is_open()){
         return -1;
@@ -154,3 +156,20 @@ bool esDocumento(const string& linea, size_t& inicio){
 bool puedeAgregar(short cantidadActual, short limite) { //funcion de monitoreo de tamanio
     return cantidadActual < limite;
 }
+
+unsigned short buscarHuespedPorDocumento(Huesped** arregloHuespedes, const string &documento, const unsigned short &cantidadHuespedes){
+    for(short i = 0; i < cantidadHuespedes; i++){
+        if(arregloHuespedes[i] -> getDocumento == documento){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
+
+
+
+
+
