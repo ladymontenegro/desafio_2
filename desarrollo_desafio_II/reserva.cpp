@@ -1,28 +1,28 @@
 #include "Reserva.h"
-#include "Fecha.h"
+#include "fecha.h"
 #include <iostream>
 #include <string>
 using namespace std;
 
 Reserva::Reserva(const string &_codigoReserva,
                  const string &_metodoPago,
-                 const string &_codigoAlojamiento,
-                 const string &_documentoHuesped,
                  const string &_inquietudes,
                  const Fecha &_fechaEntrada,
                  const Fecha &_fechaPago,
                  unsigned short _estadiaNoches,
-                 unsigned int _montoPago)
+                 unsigned int _montoPago,
+                 Huesped *_huespedAsociado,
+                 Alojamiento *_alojamientoAsociado)
 
     : codigoReserva(_codigoReserva)
     , metodoPago(_metodoPago)
-    , codigoAlojamiento(_codigoAlojamiento)
-    , documentoHuesped(_documentoHuesped)
     , inquietudes(_inquietudes)
     , fechaEntrada(_fechaEntrada)
     , fechaPago(_fechaPago)
     , estadiaNoches(_estadiaNoches)
     , montoPago(_montoPago)
+    , huespedAsociado(_huespedAsociado)
+    , alojamientoAsociado(_alojamientoAsociado)
 
 {}
 
@@ -35,16 +35,6 @@ string Reserva::getCodigoReserva() const
 string Reserva::getMetodoPago() const
 {
     return metodoPago;
-}
-
-string Reserva::getCodigoAlojamiento() const
-{
-    return codigoAlojamiento;
-}
-
-string Reserva::getDocumentoHuesped() const
-{
-    return documentoHuesped;
 }
 
 string Reserva::getInquietudes() const
@@ -81,16 +71,6 @@ void Reserva::setCodigoReserva(const string &_codigoReserva)
 void Reserva::setMetodoPago(const string &_metodoPago)
 {
     metodoPago = _metodoPago;
-}
-
-void Reserva::setCodigoAlojamiento(const string &_codigoAlojamiento)
-{
-    codigoAlojamiento = _codigoAlojamiento;
-}
-
-void Reserva::setDocumentoHuesped(const string &_documentoHuesped)
-{
-    documentoHuesped = _documentoHuesped;
 }
 
 void Reserva::setInquietudes(const string &_inquietudes)
@@ -150,7 +130,7 @@ void Reserva::setCodigoAlojamiento(const string &codigoReservaConsulta,
                                    const string &nuevoCodigoAlojamiento)
 {
     if (this->codigoReserva == codigoReservaConsulta) {
-        this->codigoAlojamiento = nuevoCodigoAlojamiento;
+        this->alojamientoAsociado = nuevoCodigoAlojamiento;
         cout << "Codigo de alojamiento de reserva " << codigoReservaConsulta << " actualizado a "
              << nuevoCodigoAlojamiento << endl;
     } else {

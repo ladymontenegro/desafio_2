@@ -1,5 +1,7 @@
 #include "alojamiento.h"
 
+#include <iostream>
+
 Alojamiento::Alojamiento(const string &_nombre,
                          const string &_amenidades,
                          const string &_codigo,
@@ -18,11 +20,17 @@ Alojamiento::Alojamiento(const string &_nombre,
     , direccion(_direccion)
     , documentoAnfitrion(_documentoAnfitrion)
     , precioNoche(_precioNoche)
-    , reservas(nullptr)
-{}
+    , cantidadDeReservas(0)
+{
+    reservas = new Reserva *[cantidadDeReservas];
+}
 
 Alojamiento::~Alojamiento()
-{}
+{
+    for (unsigned short i = 0; i < cantidadDeReservas; ++i) {
+        delete reservas[i]; //libera cada Alojamiento
+    }
+}
 
 // Metodos get
 string Alojamiento::getNombre() const
@@ -85,7 +93,7 @@ void Alojamiento::setAmenidades(const string &_amenidades)
     amenidades = _amenidades;
 }
 
-void Alojamiento::setPrecioNoches(const unsigned int &_precioNoche)
+void Alojamiento::setPrecioNoches(const unsigned int _precioNoche)
 {
     precioNoche = _precioNoche;
 }
@@ -95,11 +103,29 @@ void Alojamiento::setReservas(Reserva **_reservas)
     reservas = _reservas;
 }
 
-/*
-// Otros metodos 
-bool Alojamiento::alojamientoDisponible(const string &fechaInicio, const string &fechaFin) const
+// Otros metodos
+bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantidadDeNoches) const
 {
-    //??????????????????????
-    return true;
+    Fecha fechaSalida = fechaInicio.sumarDias(_cantidadDeNoches);
+
+    for (unsigned short i = 0; i < cantidadDeReservas; i++) {
+        Fecha entradaExistente = reservas[i]->getFechaEntrada();
+        Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
+
+        if (!(fechaSalida <= entradaExistente || fechaInicio >= salidaExistente)) {
+            return false; // Hay traslape
+        }
+    }
+    return true; // No hay traslape con ninguna reserva
 }
-*/
+
+void Alojamiento::eliminarReserva(string _codigoReserva)
+{
+    for (unsigned short i = 0; i < cantidadDeReservas; i++) {
+        if ((reservas[i]->getCodigoReserva()) == _codigoReserva) {
+            reservas[i] = nullptr;
+            cout << "Reserva eliminada" << endl;
+        }
+    }
+    cout << "No existe alguna reserva con este codigo..." << endl;
+}

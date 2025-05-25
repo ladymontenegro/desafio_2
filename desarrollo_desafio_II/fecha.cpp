@@ -89,7 +89,7 @@ void Fecha::fechaPalabras()
     };
 
     // El resultado 'h' es el indice directo.
-    // Si la fecha es válida, h estara en el rango [0, 6].
+    // Si la fecha es valida, h estara en el rango [0, 6].
     cout << "El " << nombresDias[h] << " " << int(getDia()) << " de " << nombresMeses[getMes()]
          << " del " << getAnio() << endl;
 }
@@ -101,7 +101,7 @@ Fecha Fecha::sumarDias(unsigned int diasASumar)
     unsigned char nuevoMes = mes;
     unsigned short nuevoAnio = anio;
 
-    // Arreglo para los días en cada mes (indice 0 no usado, Febrero 28 por defecto)
+    // Arreglo para los dias en cada mes (indice 0 no usado, Febrero 28 por defecto)
     // Usamos static para que se inicialice una sola vez.
     static const unsigned char diasEnMesNoBisiesto[]
         = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -127,7 +127,7 @@ Fecha Fecha::sumarDias(unsigned int diasASumar)
             // Si los días a sumar exceden el mes actual
             diasASumar
                 -= (diasRestantesEnMes
-                    + 1); // Resta los días que quedan más el día actual (para pasar al 1 del sig. mes)
+                    + 1); // Resta los días que quedan mas el dia actual (para pasar al 1 del sig. mes)
             nuevoDia = 1; // El día se convierte en el 1 del siguiente mes
 
             // Avanzar al siguiente mes
@@ -191,4 +191,36 @@ bool Fecha::operator==(const Fecha &_fecha) const
         return true;
     else
         return false;
+}
+
+bool Fecha::operator>=(const Fecha &_fecha) const
+{
+    if (this->anio > _fecha.getAnio()) {
+        return true;
+    } else if (this->anio == _fecha.getAnio()) {
+        if (this->mes > _fecha.getMes()) {
+            return true;
+        } else if (this->mes == _fecha.getMes()) {
+            if (this->dia >= _fecha.getDia()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Fecha::operator<=(const Fecha &_fecha) const
+{
+    if (this->anio < _fecha.getAnio()) {
+        return true;
+    } else if (this->anio == _fecha.getAnio()) {
+        if (this->mes < _fecha.getMes()) {
+            return true;
+        } else if (this->mes == _fecha.getMes()) {
+            if (this->dia <= _fecha.getDia()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

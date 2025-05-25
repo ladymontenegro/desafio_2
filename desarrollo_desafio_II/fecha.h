@@ -1,9 +1,6 @@
 #ifndef FECHA_H
 #define FECHA_H
 
-#include <string>
-using namespace std;
-
 class Fecha
 {
 private:
@@ -35,6 +32,8 @@ public:
     // Sobrecarga de operadores
 
     bool operator==(const Fecha &_fecha) const;
+    bool operator>=(const Fecha &_fecha) const;
+    bool operator<=(const Fecha &_fecha) const;
 };
 
 #endif // FECHA_H

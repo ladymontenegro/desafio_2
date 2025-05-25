@@ -3,6 +3,8 @@
 
 #include "fecha.h"
 #include <string>
+class Huesped;
+class Alojamiento;
 using namespace std;
 
 class Reserva
@@ -10,30 +12,30 @@ class Reserva
 private:
     string codigoReserva;
     string metodoPago;
-    string codigoAlojamiento;
-    string documentoHuesped;
     string inquietudes;
     Fecha fechaEntrada;
     Fecha fechaPago;
     unsigned short estadiaNoches;
     unsigned int montoPago;
+    Huesped *huespedAsociado;
+    Alojamiento *alojamientoAsociado;
 
 public:
     Reserva(const string &_codigoReserva,
             const string &_metodoPago,
-            const string &_codigoAlojamiento,
-            const string &_documentoHuesped,
             const string &_inquietudes,
             const Fecha &_fechaEntrada,
             const Fecha &_fechaPago,
             unsigned short _estadiaNoches,
-            unsigned int _montoPago);
+            unsigned int _montoPago,
+            Huesped *_huespedAsociado,
+            Alojamiento *_alojamientoAsociado);
 
     // Metodos get
     string getCodigoReserva() const;
     string getMetodoPago() const;
-    string getCodigoAlojamiento() const;
-    string getDocumentoHuesped() const;
+    string getCodigoAlojamientoAsociado() const;
+    string getDocumentoHuespedAsociado() const;
     string getInquietudes() const;
     Fecha getFechaEntrada() const;
     Fecha getFechaPago() const;
@@ -43,8 +45,6 @@ public:
     // Metodos set
     void setCodigoReserva(const string &_codigoReserva);
     void setMetodoPago(const string &_metodoPago);
-    void setCodigoAlojamiento(const string &_codigoAlojamiento);
-    void setDocumentoHuesped(const string &_docuemntoHuesped);
     void setInquietudes(const string &_inquietudes);
     void setFechaEntrada(const Fecha &_fechaEntrada);
     void setFechaPago(const Fecha &_fechaPago);

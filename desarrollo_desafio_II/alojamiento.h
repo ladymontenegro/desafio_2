@@ -17,6 +17,7 @@ private:
     const string direccion;
     const string documentoAnfitrion;
     unsigned int precioNoche;
+    unsigned short cantidadDeReservas;
     Reserva **reservas;
 
 public:
@@ -28,7 +29,7 @@ public:
                 const string &_tipo,
                 const string &_direccion,
                 const string &_documentoAnfitrion,
-                unsigned int precioNoche);
+                unsigned int _precioNoche);
 
     ~Alojamiento();
 
@@ -42,16 +43,18 @@ public:
     const string getDireccion();
     const string getDocumentoAnfitrion();
     unsigned int getPrecioNoche() const;
+    unsigned short getCantidaDeAlojamientos() const;
     Reserva **getReservas() const;
 
     // Metodos set
     void setNombre(const string &_nombre);
     void setAmenidades(const string &_amenidades);
-    void setPrecioNoches(const unsigned int &_precioNoche);
-    void setReservas(unsigned int cantidadReservas);
+    void setPrecioNoches(const unsigned int _precioNoche);
+    void setReservas(Reserva **_reservas);
 
     // Otros metodos
-    bool alojamientoDisponible(const Fecha &fechaInicio, const Fecha &fechaFin) const;
+    bool alojamientoDisponible(Fecha fechaInicio, unsigned int cantidadDeNoches) const;
+    void eliminarReserva(string codigoReserva);
 };
 
 #endif // ALOJAMIENTO_H

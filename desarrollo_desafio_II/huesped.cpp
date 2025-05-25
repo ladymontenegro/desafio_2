@@ -27,9 +27,18 @@ float Huesped::getPuntuacion() const
     return puntuacion;
 }
 
-unsigned short Huesped::getaAntiguedadMeses() const
+unsigned short Huesped::getAntiguedadMeses() const
 {
     return antiguedadMeses;
+}
+
+unsigned short Huesped::getCapacidadReservas() const
+{
+    return capacidadReservas;
+}
+unsigned short Huesped::getReservasCargadas() const
+{
+    return reservasCargadas;
 }
 
 Reserva **Huesped::getReservas() const
@@ -49,9 +58,44 @@ void Huesped::setAntiguedadMeses(unsigned short _antiguedadMeses)
     antiguedadMeses = _antiguedadMeses;
 }
 
+void Huesped::setCapacidadReservas(unsigned short _capacidadReservas)
+{
+    capacidadReservas = _capacidadReservas;
+}
+
 void Huesped::setReservas(Reserva **_reservas)
 {
     reservas = _reservas;
 }
 
 // Otros metodos
+
+void Huesped::eliminarReserva(string codigoReserva) {}
+
+void Huesped::agregarReserva(Reserva *nuevaReserva)
+{
+    if (reservasCargadas >= capacidadReservas) {
+        int nuevaCapacidad;
+        if (capacidadReservas == 0) {
+            nuevaCapacidad = 1;
+        } else {
+            nuevaCapacidad = capacidadReservas * 2;
+        }
+
+        Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
+
+        for (int i = 0; i < reservasCargadas; i++) {
+            nuevoArreglo[i] = reservas[i];
+        }
+
+        for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
+            nuevoArreglo[i] = nullptr;
+        }
+        delete[] reservas;
+
+        reservas = nuevoArreglo;
+        capacidadReservas = nuevaCapacidad;
+    }
+    reservas[reservasCargadas] = nuevaReserva;
+    reservasCargadas++;
+}

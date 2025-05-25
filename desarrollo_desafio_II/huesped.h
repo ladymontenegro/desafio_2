@@ -12,6 +12,8 @@ private:
     const string documento;
     float puntuacion;
     unsigned short antiguedadMeses;
+    unsigned short capacidadReservas;
+    unsigned short reservasCargadas;
     Reserva **reservas;
 
 public:
@@ -25,16 +27,22 @@ public:
     const string getNombre();
     const string getDocumento();
     float getPuntuacion() const;
-    unsigned short getaAntiguedadMeses() const;
+    unsigned short getAntiguedadMeses() const;
+    unsigned short getCapacidadReservas() const;
+    unsigned short getReservasCargadas() const;
     Reserva **getReservas() const;
 
     // Metodos set
 
     void setPuntuacion(float _puntuacion);
     void setAntiguedadMeses(unsigned short _antiguedadMeses);
+    void setCapacidadReservas(unsigned short _capacidadReservas);
     void setReservas(Reserva **_reservas);
 
     // Otros metodos
+
+    void eliminarReserva(string codigoReserva);
+    void agregarReserva(Reserva *nuevaReserva);
 };
 
 #endif // HUESPED_H
