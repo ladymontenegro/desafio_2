@@ -8,8 +8,7 @@ Alojamiento::Alojamiento(const string &_nombre,
                          const string &_tipo,
                          const string &_direccion,
                          const string &_documentoAnfitrion,
-                         unsigned int _precioNoche,
-                         Reserva **_reservas)
+                         unsigned int _precioNoche)
     : nombre(_nombre)
     , amenidades(_amenidades)
     , codigo(_codigo)
@@ -19,15 +18,11 @@ Alojamiento::Alojamiento(const string &_nombre,
     , direccion(_direccion)
     , documentoAnfitrion(_documentoAnfitrion)
     , precioNoche(_precioNoche)
-    , reservas(_reservas)
-{
-    //Reservar memoria
-}
+    , reservas(nullptr)
+{}
 
 Alojamiento::~Alojamiento()
-{
-    // Liberar Memoria !!!!!!
-}
+{}
 
 // Metodos get
 string Alojamiento::getNombre() const
@@ -97,7 +92,6 @@ void Alojamiento::setPrecioNoches(const unsigned int &_precioNoche)
 
 void Alojamiento::setReservas(Reserva **_reservas)
 {
-    // ????????????
     reservas = _reservas;
 }
 

@@ -8,6 +8,7 @@ Huesped::Huesped(const string &_nombre,
     , documento(_documento)
     , puntuacion(_puntuacion)
     , antiguedadMeses(_antiguedadMeses)
+    , reservas(nullptr)
 {}
 
 // Metodos get
@@ -26,9 +27,14 @@ float Huesped::getPuntuacion() const
     return puntuacion;
 }
 
-unsigned short Huesped::getaAtiguedadMeses() const
+unsigned short Huesped::getaAntiguedadMeses() const
 {
     return antiguedadMeses;
+}
+
+Reserva **Huesped::getReservas() const
+{
+    return reservas;
 }
 
 // Metodos set
@@ -41,6 +47,11 @@ void Huesped::setPuntuacion(float _puntuacion)
 void Huesped::setAntiguedadMeses(unsigned short _antiguedadMeses)
 {
     antiguedadMeses = _antiguedadMeses;
+}
+
+void Huesped::setReservas(Reserva **_reservas)
+{
+    reservas = _reservas;
 }
 
 // Otros metodos

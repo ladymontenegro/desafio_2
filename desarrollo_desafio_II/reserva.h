@@ -46,7 +46,7 @@ public:
     void setCodigoAlojamiento(const string &_codigoAlojamiento);
     void setDocumentoHuesped(const string &_docuemntoHuesped);
     void setInquietudes(const string &_inquietudes);
-    void setFechaEntrada(const Fecha &_fechaInicio);
+    void setFechaEntrada(const Fecha &_fechaEntrada);
     void setFechaPago(const Fecha &_fechaPago);
     void setEstadiaNoches(unsigned short _estadiaNoches);
     void setMontoPago(unsigned int _montoPago);

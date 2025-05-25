@@ -28,8 +28,7 @@ public:
                 const string &_tipo,
                 const string &_direccion,
                 const string &_documentoAnfitrion,
-                unsigned int precioNoche,
-                Reserva **reservas);
+                unsigned int precioNoche);
 
     ~Alojamiento();
 
@@ -49,7 +48,7 @@ public:
     void setNombre(const string &_nombre);
     void setAmenidades(const string &_amenidades);
     void setPrecioNoches(const unsigned int &_precioNoche);
-    void setReservas(string **_reservas);
+    void setReservas(unsigned int cantidadReservas);
 
     // Otros metodos
     bool alojamientoDisponible(const Fecha &fechaInicio, const Fecha &fechaFin) const;

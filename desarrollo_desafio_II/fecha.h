@@ -1,29 +1,40 @@
 #ifndef FECHA_H
 #define FECHA_H
 
+#include <string>
+using namespace std;
+
 class Fecha
 {
 private:
-    unsigned int dia;
-    unsigned int mes;
-    unsigned int anio;
+    unsigned char dia;
+    unsigned char mes;
+    unsigned short anio;
 
 public:
-    Fecha(unsigned int _dia, unsigned int _mes, unsigned int _anio);
+    Fecha(unsigned char _dia, unsigned char _mes, unsigned short _anio);
 
     // Metodos get
-    unsigned int getDia() const;
-    unsigned int getMes() const;
-    unsigned int getAnio() const;
+    unsigned char getDia() const;
+    unsigned char getMes() const;
+    unsigned short getAnio() const;
 
     // Metodos set
-    void setDia(unsigned int _dia);
-    void setMes(unsigned int _mes);
-    void setAnio(unsigned int _anio);
+    void setDia(unsigned char _dia);
+    void setMes(unsigned char _mes);
+    void setAnio(unsigned short _anio);
 
     // Otros metodos
-    void fechaPalabras(unsigned int _dia, unsigned int _mes, unsigned int _anio);
-    void sumarDias(unsigned int _dias);
+    void fechaPalabras();
+    Fecha sumarDias(unsigned int diasASumar);
+
+    // Validaciones
+    bool esBisiesto(unsigned short _anio);
+    bool validacionFecha();
+
+    // Sobrecarga de operadores
+
+    bool operator==(const Fecha &_fecha) const;
 };
 
 #endif // FECHA_H
