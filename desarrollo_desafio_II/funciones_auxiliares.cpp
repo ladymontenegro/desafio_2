@@ -5,17 +5,23 @@
 using namespace std;
 
 //FUNCIONES AUXILIARES
-string obtenerDato(const string& linea, size_t& inicio, const char delimitador) {
+string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool esCampoObligatorio = true){
+
     size_t fin = linea.find(delimitador, inicio);
     string atributo;
 
-    if (fin != string::npos) { // si se encontro una coma
+    if (fin != string::npos) { //si se encontro la coma
         atributo = linea.substr(inicio, fin - inicio);
-        inicio = fin + 1; // actualiza el inicio para el proximo atributo, por eso se pasa por referencia
-    } else { // pa que igual tome el ultimo atributo que no tiene coma
+        inicio = fin + 1; //actualiza el inicio para el proximo atributo, por eso se pasa por referencia
+    } else { //para el ultimo atributo que no tiene delimitador
         atributo = linea.substr(inicio);
-        inicio = linea.length(); // evita procesar mas atributos
+        inicio = linea.length(); //evita procesar mas atributos
     }
+
+    if (esCampoObligatorio && atributo.empty()) {
+        throw invalid_argument(nombreCampoError + " vacio en la linea de datos.");
+    }
+
     return atributo;
 }
 
@@ -58,9 +64,13 @@ Fecha crearFecha(const string &fechaStr){
     if(fechaStr != ""){
         size_t inicio = 0;
         const char delimitador = '-';
-        unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        try {
+            unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+            unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+            unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        } catch (const exception& e) {
+            throw invalid_argument("Error en formato numerico: " + string(e.what()));
+        }
 
         Fecha fechaCreada(dia, mes, anio);
 

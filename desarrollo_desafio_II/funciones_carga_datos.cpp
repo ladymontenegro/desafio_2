@@ -1,14 +1,15 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <stdexcept> //pa las excepciones estandar
 #include "header_funciones.h"
 using namespace std;
-
 
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES
 short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfitriones) {
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()){
+        cerr << "Error: No se pudo abrir el archivo '" << rutaArchivo << "'" << endl;
         return -1;
     }
 
@@ -26,57 +27,112 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
         }
     }
 
-    while (getline(archivo, linea)) {
-        size_t inicio = 0;
+    try {
+        while (getline(archivo, linea)) {
+            size_t inicio = 0;
+            Anfitrion* nuevoAnfitrion = nullptr;
+            Alojamiento* nuevoAlojamiento = nullptr;
 
-        if (esDocumento(linea,inicio)) { //pa ver si es anfitrion
-            //obtener atributos de anfitrion
-            string documento = obtenerDato(linea,inicio,delimitador);
-            float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
-            unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
+            try { //try para manejar errores en el procesamiento de linea
+                if (esDocumento(linea,inicio)) {
+                    //validacion de documento
+                    string documento = obtenerDato(linea,inicio,delimitador);
 
-            if(anfitrionesCargados < capacidadAnfitriones){
-                arregloAnfitriones[anfitrionesCargados] = new Anfitrion(documento, puntuacion, antiguedad);
-                anfitrionesCargados++;
-            } else {
-                redimensionarArreglo(capacidadAnfitriones, anfitrionesCargados, arregloAnfitriones);
+                    float puntuacion;
+                    try {
+                        string puntuacion_str = obtenerDato(linea, inicio, delimitador);
+                        puntuacion = stof(puntuacion_str);
+                        if ((puntuacion < 0.0f) || (puntuacion > 5.0f)){
+                            throw out_of_range("La puntuacion debe estar entre 0 y 5");
+                        }
+                    } catch(const exception& e){
+                        throw runtime_error("Error en puntuacion: " + string(e.what()));
+                    }
+
+                    unsigned short antiguedad;
+                    try {
+                        antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
+                    } catch(const exception& e) {
+                        throw runtime_error("Error en antigüedad: " + string(e.what()));
+                    }
+
+                    if(anfitrionesCargados >= capacidadAnfitriones){
+                        redimensionarArreglo(capacidadAnfitriones, anfitrionesCargados, arregloAnfitriones);
+                    }
+
+                    nuevoAnfitrion = new Anfitrion(documento, puntuacion, antiguedad);
+                    arregloAnfitriones[anfitrionesCargados] = nuevoAnfitrion;
+                    anfitrionesCargados++;
+
+                    alojamientosCargados = 0;
+                    anfitrionActivo = true;
+
+                } else if (anfitrionActivo) {
+                    //validacion de existencia de anfitrion
+                    if(anfitrionesCargados == 0) {
+                        throw logic_error("No hay anfitriones registrados para agregar alojamiento");
+                    }
+                    string documento = arregloAnfitriones[anfitrionesCargados-1] -> getDocumento();
+                    string codigoAlojamiento = obtenerDato(linea,inicio,delimitador);
+                    string nombre = obtenerDato(linea,inicio,delimitador);
+                    string municipio = obtenerDato(linea,inicio,delimitador);
+                    string departamento = obtenerDato(linea,inicio,delimitador);
+
+                    unsigned int precioNoche;
+                    try {
+                        precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
+                    } catch(const exception& e) {
+                        throw runtime_error("Error en precio: " + string(e.what()));
+                    }
+
+                    string tipo = obtenerDato(linea,inicio,delimitador);
+                    string direccion = obtenerDato(linea,inicio,delimitador);
+                    string amenidades = obtenerDato(linea,inicio,delimitador, false);
+
+                    Alojamiento* nuevoAlojamiento = new Alojamiento(nombre, amenidades, codigoAlojamiento, municipio, departamento, tipo, direccion, documento, precioNoche);
+
+                    if (!arregloAnfitriones[anfitrionesCargados-1] -> agregarAlojamiento(nuevoAlojamiento)) {
+                        delete nuevoAlojamiento;
+                        throw runtime_error("No se pudo agregar alojamiento al anfitrion");
+                    }
+                    alojamientosCargados++;
+                } else {
+                    throw runtime_error("Linea inesperada o alojamiento sin anfitrion activo.");
+                }
+            } catch(const exception& e) {
+                cerr << "Error procesando linea: '" << linea << "'\nMotivo: " << e.what() << endl;
+                if (nuevoAnfitrion != nullptr) {
+                    delete nuevoAnfitrion;
+                }
+                if (nuevoAlojamiento != nullptr) {
+                    delete nuevoAlojamiento;
+                }
+                anfitrionActivo = false;
+                continue;
             }
-
-            alojamientosCargados = 0;  //se resetea pa contar cada uno de los alojamientos relacionados a un anfitrion
-            anfitrionActivo = true;
         }
-        else if (anfitrionActivo) {  //si no es anfitrion, es alojamiento
-            //obtener atributos de alojamiento
-            string documento = arregloAnfitriones[anfitrionesCargados-1] -> getDocumento();
-            string codigoAlojamiento = obtenerDato(linea,inicio,delimitador);
-            string nombre = obtenerDato(linea,inicio,delimitador);
-            string municipio = obtenerDato(linea,inicio,delimitador);
-            string departamento = obtenerDato(linea,inicio,delimitador);
-            unsigned int precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
-            string tipo = obtenerDato(linea,inicio,delimitador);
-            string direccion = obtenerDato(linea,inicio,delimitador);
-            string amenidades = obtenerDato(linea,inicio,delimitador);
+    } catch(const exception& e) {
+        cerr << "Error critico al cargar anfitriones y alojamientos: " << e.what() << endl;
+        archivo.close();
 
-            //crear y agregar alojamiento
-            Alojamiento* nuevoAlojamiento = new Alojamiento(nombre, amenidades, codigoAlojamiento, municipio, departamento, tipo, direccion, documento, precioNoche);
-            //reserva memoria para un Anfitrion y retorna su dirección (puntero de tipo Anfitrion*).
-
-            if (arregloAnfitriones[anfitrionesCargados - 1] -> agregarAlojamiento(nuevoAlojamiento)) {
-                alojamientosCargados++;
-            } else {
-                delete nuevoAlojamiento;  //libera memoria si no se pudo agregar
-            }
+        //limpiar toda la memoria asignada hasta el momento
+        for (short i = 0; i < anfitrionesCargados; ++i) {
+            delete arregloAnfitriones[i];
         }
+        delete[] arregloAnfitriones;
+        arregloAnfitriones = nullptr;
+        throw;
     }
 
-    archivo.close();
 
+    archivo.close();
     return anfitrionesCargados;
 }
 
 int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes){
     ifstream archivo(rutaArchivo);
     if(!archivo.is_open()){
+        cerr << "Error: No se pudo abrir el archivo '" << rutaArchivo << "'" << endl;
         return -1;
     }
 
@@ -93,33 +149,74 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
 
     short huespedesCargados = 0;
 
-    while(getline(archivo, linea)){
-        size_t inicio = 0;
+    try {
+        while(getline(archivo, linea)) {
+            size_t inicio = 0;
+            Huesped* nuevoHuesped = nullptr;
 
-        if(linea == ""){
-            break;
+            try {
+                if(linea.empty()) continue;  //pa saltar lineas vacias en lugar de romper el ciclo
+
+                string documento = obtenerDato(linea, inicio, delimitador);
+                string nombre = obtenerDato(linea, inicio, delimitador);
+
+                float puntuacion;
+                try {
+                    string puntuacion_str = obtenerDato(linea, inicio, delimitador);
+                    puntuacion = stof(puntuacion_str);
+                    if ((puntuacion < 0.0f) || (puntuacion > 5.0f)){
+                        throw out_of_range("La puntuacion debe estar entre 0 y 5");
+                    }
+
+                } catch(const exception& e){
+                    throw runtime_error("Error en puntuacion: " + string(e.what()));
+                }
+
+                unsigned short antiguedad;
+                try {
+                    string antiguedad_str = obtenerDato(linea, inicio, delimitador);
+                    antiguedad = static_cast<unsigned short>(stoi(antiguedad_str));
+                } catch(const exception& e) {
+                    throw runtime_error("Antigüedad invalida: " + string(e.what()));
+                }
+
+                if(huespedesCargados >= capacidadHuespedes) {
+                    redimensionarArreglo(capacidadHuespedes, huespedesCargados, arregloHuespedes);
+                }
+
+                nuevoHuesped = new Huesped(nombre, documento, puntuacion, antiguedad);
+                arregloHuespedes[huespedesCargados] = nuevoHuesped;
+                huespedesCargados++;
+
+            } catch(const exception& e) {
+                cerr << "Error procesando linea: " << linea << "\nCausa: " << e.what() << endl;
+                if (nuevoHuesped != nullptr) {
+                    delete nuevoHuesped;
+                }
+                continue;
+            }
         }
 
-        //Recordar agregar las excepciones !!!
-        string documento = obtenerDato(linea,inicio,delimitador);
-        string nombre = obtenerDato(linea,inicio,delimitador);
-        float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
-        unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
+    } catch(const exception& e) {
+        cerr << "Error critico al cargar huespedes: " << e.what() << endl;
+        archivo.close();
 
-        if(huespedesCargados < capacidadHuespedes){
-            arregloHuespedes[huespedesCargados] = new Huesped(nombre, documento, puntuacion, antiguedad);
-            //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*)
-            huespedesCargados++;
-        } else {
-            redimensionarArreglo(capacidadHuespedes, huespedesCargados, arregloHuespedes);
+        for (short i = 0; i < huespedesCargados; ++i) {
+            delete arregloHuespedes[i];
         }
+        delete[] arregloHuespedes;
+        arregloHuespedes = nullptr;
+        throw;
     }
+
     return huespedesCargados;
 }
 
-int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes){
+int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes) {
+
     ifstream archivo(rutaArchivo);
-    if(!archivo.is_open()){
+    if (!archivo.is_open()) {
+        cerr << "Error: No se pudo abrir el archivo '" << rutaArchivo << "'" << endl;
         return -1;
     }
 
@@ -133,69 +230,112 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
     short reservasCargadas = 0;
     bool alojamientoActivo = false;
 
-    if(arregloReservas == nullptr){
+    if (arregloReservas == nullptr) {
         arregloReservas = new Reserva*[capacidadReservasGlobales];
-        for(short i = 0; i < capacidadReservasGlobales; i++){
+        for (short i = 0; i < capacidadReservasGlobales; ++i) {
             arregloReservas[i] = nullptr;
         }
     }
 
-    while(getline(archivo, linea)){
-        size_t inicio = 0;
-        Alojamiento* alojamientoActual = nullptr;
-        Huesped* huespedActual = nullptr;
+    try { //este try de aca es pa manejar los errores que puede haber antes del try interno del while
+        while (getline(archivo, linea)) {
+            size_t inicio = 0;
 
-        if(linea == ""){
-            break;
-        }
+            if (linea.empty()) continue;
 
-        if((linea.length()) == 4){
-            codigoAlojamiento = linea;
-            bool codigoEncontrado = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, cantidadAnfitriones, indiceAnfitrion, indiceAlojamiento);
-            alojamientoActivo = codigoEncontrado;
-        }
+            if (linea.length() == 4) {
+                codigoAlojamiento = linea;
+                bool codigoEncontrado = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, cantidadAnfitriones, indiceAnfitrion, indiceAlojamiento);
 
-        else if(alojamientoActivo){
-            string _fechaEntrada = obtenerDato(linea,inicio,delimitador);
-            Fecha fechaEntrada = crearFecha(_fechaEntrada);
-            string codigoReserva = obtenerDato(linea,inicio,delimitador);
-            string documentoHuesped = obtenerDato(linea,inicio,delimitador);
-            unsigned short estadiaNoches = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
-            string metodoPago = obtenerDato(linea,inicio,delimitador);
-            string _fechaPago = obtenerDato(linea,inicio,delimitador);
-            Fecha fechaPago = crearFecha(_fechaPago);
-            unsigned int montoPago= stoi(obtenerDato(linea,inicio,delimitador));
-            string inquietudes = obtenerDato(linea,inicio,delimitador);
-
-            indiceHuesped = buscarHuespedPorDocumento(arregloHuespedes, documentoHuesped, cantidadHuespedes);
-            if (indiceHuesped != -1) {
-                huespedActual = arregloHuespedes[indiceHuesped];
+                if (!codigoEncontrado) {
+                    throw invalid_argument("Codigo de alojamiento no encontrado: " + codigoAlojamiento + " en linea: " + linea);
+                }
+                alojamientoActivo = true;
+                continue;
             }
 
-            Anfitrion* anfitrion = arregloAnfitriones[indiceAnfitrion];
-            if (anfitrion != nullptr) {
-                alojamientoActual = anfitrion -> getAlojamiento(indiceAlojamiento);
-            }
+            if (alojamientoActivo) {
+                Reserva* nuevaReserva = nullptr;
 
-            if(alojamientoActual != nullptr && huespedActual != nullptr){
-                //se instancia el objeto
-                Reserva* reserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago, estadiaNoches, montoPago, huespedActual, alojamientoActual);
+                try { //este try es solo para los errores que puede haber en la linea que se lee
+                    string _fechaEntradaStr = obtenerDato(linea, inicio, delimitador);
+                    Fecha fechaEntrada = crearFecha(_fechaEntradaStr);
 
-                //se apunta la reserva a sus respectivos alojamiento y huesped
-                alojamientoActual -> agregarReserva(reserva);
-                huespedActual -> agregarReserva(reserva);
+                    string codigoReserva = obtenerDato(linea, inicio, delimitador);
+                    string documentoHuesped = obtenerDato(linea, inicio, delimitador);
+                    string metodoPago = obtenerDato(linea, inicio, delimitador);
+                    string _fechaPagoStr = obtenerDato(linea, inicio, delimitador);
+                    Fecha fechaPago = crearFecha(_fechaPagoStr);
 
-                if (reservasCargadas < capacidadReservasGlobales) {
-                    //se agrega la reserva en el arreglo general de reservas
-                    arregloReservas[reservasCargadas] = reserva;
+                    // Campos numericos (usando la plantilla sin unsigned long intermedio)
+                    unsigned short estadiaNoches;
+                    try {
+                        string estadiaNoches_str = obtenerDato(linea, inicio, delimitador);
+                        estadiaNoches = static_cast<unsigned short>(stoi(estadiaNoches_str));
+                    } catch(const exception& e) {
+                        throw runtime_error("Estadia de noche invalida: " + string(e.what()));
+                    }
+
+                    unsigned int montoPago;
+                    try {
+                        string montoPago_str = obtenerDato(linea, inicio, delimitador);
+                        montoPago = static_cast<unsigned short>(stoi(montoPago_str));
+                    } catch(const exception& e) {
+                        throw runtime_error("Monto de pago invalida: " + string(e.what()));
+                    }
+
+                    string inquietudes = obtenerDato(linea, inicio, delimitador, false);
+
+                    //validaciones de indices y punteros
+                    if (indiceAnfitrion >= cantidadAnfitriones || indiceAnfitrion < 0) {
+                        throw out_of_range("indice de anfitrion invalido.");
+                    }
+
+                    indiceHuesped = buscarHuespedPorDocumento(arregloHuespedes, documentoHuesped, cantidadHuespedes);
+                    if (indiceHuesped == -1) {
+                        throw invalid_argument("Huesped no registrado: " + documentoHuesped);
+                    }
+
+                    Anfitrion* anfitrion = arregloAnfitriones[indiceAnfitrion];
+                    if (anfitrion == nullptr) {
+                        throw logic_error("Anfitrion no inicializado en el indice: " + to_string(indiceAnfitrion));
+                    }
+
+                    Alojamiento* alojamientoActual = anfitrion -> getAlojamiento(indiceAlojamiento);
+                    Huesped* huespedActual = arregloHuespedes[indiceHuesped];
+
+                    if (alojamientoActual == nullptr || huespedActual == nullptr) {
+                        throw logic_error("Alojamiento o huesped asociado no encontrado.");
+                    }
+
+                    if (reservasCargadas >= capacidadReservasGlobales) {
+                        redimensionarArreglo(capacidadReservasGlobales, reservasCargadas, arregloReservas);
+                    }
+
+                    nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago, estadiaNoches, montoPago, huespedActual, alojamientoActual);
+                    arregloReservas[reservasCargadas] = nuevaReserva;
                     reservasCargadas++;
-                } else {
-                    redimensionarArreglo(capacidadReservasGlobales, reservasCargadas, arregloReservas);
+
+                } catch (const exception& e) {
+                    cerr << "Error al procesar linea de reserva: '" << linea << "'. Causa: " << e.what() << endl;
+                    if (nuevaReserva != nullptr) {
+                        delete nuevaReserva;
+                    }
+                    continue;
                 }
             }
         }
+    } catch (const exception& e) {
+        cerr << "Error critico al cargar las reservas: " << e.what() << endl;
+        archivo.close();
+        for (short i = 0; i < reservasCargadas; ++i) {
+            delete arregloReservas[i];
+        }
+        delete[] arregloReservas;
+        arregloReservas = nullptr;
+        throw;
     }
+
+    archivo.close();
     return reservasCargadas;
 }
-
-//FUNCIONES PARA CARGA DE DATOS EN ARCHIVOS

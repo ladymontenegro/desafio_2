@@ -7,7 +7,7 @@
 using namespace std;
 
 //FUNCIONES AUXILIARES
-string obtenerDato(const string& linea, size_t& inicio, const char delimitador);
+string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool esCampoObligatorio = true);
 bool esDocumento(const string& linea, size_t& inicio);
 short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes);
 bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento);
