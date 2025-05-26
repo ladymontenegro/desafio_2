@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include "header_funciones.h"
-
 using namespace std;
 
 
@@ -17,10 +16,8 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
     unsigned short anfitrionesCargados = 0;
     unsigned short alojamientosCargados = 0;
     unsigned short capacidadAnfitriones = 40;
-    unsigned short nuevaCapacidad = 0;
     bool anfitrionActivo = false;
     string linea;
-    string documento = "";
 
     if (arregloAnfitriones == nullptr) {
         arregloAnfitriones = new Anfitrion*[capacidadAnfitriones];
@@ -34,39 +31,28 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
 
         if (esDocumento(linea,inicio)) { //pa ver si es anfitrion
             //obtener atributos de anfitrion
-            documento = obtenerDato(linea,inicio,delimitador);
+            string documento = obtenerDato(linea,inicio,delimitador);
             float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
             unsigned short antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
 
             if(anfitrionesCargados < capacidadAnfitriones){
                 arregloAnfitriones[anfitrionesCargados] = new Anfitrion(documento, puntuacion, antiguedad);
                 anfitrionesCargados++;
-            } else{
-                nuevaCapacidad = capacidadAnfitriones * 2;
+            } else {
+                redimensionarArreglo(capacidadAnfitriones, anfitrionesCargados, arregloAnfitriones);
             }
-
-            Anfitrion** nuevoArreglo = new Anfitrion*[nuevaCapacidad];
-
-            for (int i = 0; i < anfitrionesCargados; i++) {
-                nuevoArreglo[i] = arregloAnfitriones[i];
-            }
-            for (int i = anfitrionesCargados; i < nuevaCapacidad; i++) {
-                nuevoArreglo[i] = nullptr;
-            }
-            delete[] arregloAnfitriones;
-            arregloAnfitriones = nuevoArreglo;
-            capacidadAnfitriones = nuevaCapacidad;
 
             alojamientosCargados = 0;  //se resetea pa contar cada uno de los alojamientos relacionados a un anfitrion
             anfitrionActivo = true;
         }
         else if (anfitrionActivo) {  //si no es anfitrion, es alojamiento
             //obtener atributos de alojamiento
+            string documento = arregloAnfitriones[anfitrionesCargados-1] -> getDocumento();
             string codigoAlojamiento = obtenerDato(linea,inicio,delimitador);
             string nombre = obtenerDato(linea,inicio,delimitador);
             string municipio = obtenerDato(linea,inicio,delimitador);
             string departamento = obtenerDato(linea,inicio,delimitador);
-            string precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
+            unsigned int precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
             string tipo = obtenerDato(linea,inicio,delimitador);
             string direccion = obtenerDato(linea,inicio,delimitador);
             string amenidades = obtenerDato(linea,inicio,delimitador);
@@ -75,7 +61,7 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
             Alojamiento* nuevoAlojamiento = new Alojamiento(nombre, amenidades, codigoAlojamiento, municipio, departamento, tipo, direccion, documento, precioNoche);
             //reserva memoria para un Anfitrion y retorna su dirección (puntero de tipo Anfitrion*).
 
-            if (arregloAnfitriones[anfitrionesCargados-1] -> agregarAlojamiento(nuevoAlojamiento)) {
+            if (arregloAnfitriones[anfitrionesCargados - 1] -> agregarAlojamiento(nuevoAlojamiento)) {
                 alojamientosCargados++;
             } else {
                 delete nuevoAlojamiento;  //libera memoria si no se pudo agregar
@@ -100,6 +86,9 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
 
     if (arregloHuespedes == nullptr) {
         arregloHuespedes = new Huesped*[capacidadHuespedes];
+        for(short i = 0; i < capacidadHuespedes; i++){
+            arregloHuespedes[i] = nullptr;
+        }
     }
 
     short huespedesCargados = 0;
@@ -107,7 +96,11 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
     while(getline(archivo, linea)){
         size_t inicio = 0;
 
-        //Rrecordar agregar las excepciones !!!
+        if(linea == ""){
+            break;
+        }
+
+        //Recordar agregar las excepciones !!!
         string documento = obtenerDato(linea,inicio,delimitador);
         string nombre = obtenerDato(linea,inicio,delimitador);
         float puntuacion = stof(obtenerDato(linea,inicio,delimitador));
@@ -117,6 +110,8 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
             arregloHuespedes[huespedesCargados] = new Huesped(nombre, documento, puntuacion, antiguedad);
             //reserva memoria para un Huesped y retorna su dirección (puntero de tipo Hueped*)
             huespedesCargados++;
+        } else {
+            redimensionarArreglo(capacidadHuespedes, huespedesCargados, arregloHuespedes);
         }
     }
     return huespedesCargados;
@@ -128,14 +123,14 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
         return -1;
     }
 
-    unsigned short capacidadReservasGlobales = 400;
+    unsigned short capacidadReservasGlobales = 150;
     char delimitador = ',';
-    char delimitadorFecha = '-';
-    string codigoAlojamiento = "";
+    string linea = "";
+    string codigoAlojamiento;
     short indiceAnfitrion = 0;
     short indiceAlojamiento = 0;
     short indiceHuesped = 0;
-    short reservasGlobalesCargadas = 0;
+    short reservasCargadas = 0;
     bool alojamientoActivo = false;
 
     if(arregloReservas == nullptr){
@@ -145,12 +140,14 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
         }
     }
 
-    string linea = "";
-
     while(getline(archivo, linea)){
         size_t inicio = 0;
         Alojamiento* alojamientoActual = nullptr;
         Huesped* huespedActual = nullptr;
+
+        if(linea == ""){
+            break;
+        }
 
         if((linea.length()) == 4){
             codigoAlojamiento = linea;
@@ -159,13 +156,13 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
         }
 
         else if(alojamientoActivo){
-            string _fechaEntrada = obtenerDato(linea,inicio,delimitadorFecha);
+            string _fechaEntrada = obtenerDato(linea,inicio,delimitador);
             Fecha fechaEntrada = crearFecha(_fechaEntrada);
             string codigoReserva = obtenerDato(linea,inicio,delimitador);
             string documentoHuesped = obtenerDato(linea,inicio,delimitador);
             unsigned short estadiaNoches = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
             string metodoPago = obtenerDato(linea,inicio,delimitador);
-            string _fechaPago = obtenerDato(linea,inicio,delimitadorFecha);
+            string _fechaPago = obtenerDato(linea,inicio,delimitador);
             Fecha fechaPago = crearFecha(_fechaPago);
             unsigned int montoPago= stoi(obtenerDato(linea,inicio,delimitador));
             string inquietudes = obtenerDato(linea,inicio,delimitador);
@@ -188,15 +185,17 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                 alojamientoActual -> agregarReserva(reserva);
                 huespedActual -> agregarReserva(reserva);
 
-                if (reservasGlobalesCargadas < capacidadReservasGlobales) {
+                if (reservasCargadas < capacidadReservasGlobales) {
                     //se agrega la reserva en el arreglo general de reservas
-                    arregloReservas[reservasGlobalesCargadas] = reserva;
-                    reservasGlobalesCargadas++;
+                    arregloReservas[reservasCargadas] = reserva;
+                    reservasCargadas++;
                 } else {
-                    // Manejar error: arreglo lleno
+                    redimensionarArreglo(capacidadReservasGlobales, reservasCargadas, arregloReservas);
                 }
             }
         }
     }
-    return reservasGlobalesCargadas;
+    return reservasCargadas;
 }
+
+//FUNCIONES PARA CARGA DE DATOS EN ARCHIVOS

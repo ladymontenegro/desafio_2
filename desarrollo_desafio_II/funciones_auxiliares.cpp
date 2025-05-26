@@ -34,7 +34,7 @@ bool esDocumento(const string& linea, size_t& inicio){
 
 short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes){
     for(short i = 0; i < cantidadHuespedes; i++){
-        if(arregloHuespedes[i] -> getDocumento() == documento){
+        if((arregloHuespedes[i] -> getDocumento()) == documento){
             return i;
         }
     }
@@ -43,7 +43,7 @@ short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &docum
 
 bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
     for(short i = 0; i < cantidadAnfitriones; i++){
-        for(short j = 0; j < arregloAnfitriones[i] -> getCantidadAlojamientos(); j++){
+        for(short j = 0; j < (arregloAnfitriones[i] -> getAlojamientosCargados()); j++){
             if((arregloAnfitriones[i] -> getAlojamiento(j) -> getCodigo()) == codigo){
                 indiceAnfitrion = i;
                 indiceAlojamiento = j;
@@ -55,13 +55,21 @@ bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &c
 }
 
 Fecha crearFecha(const string &fechaStr){
-    size_t inicio = 0;
-    const char delimitador = '-';
-    unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-    unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-    unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+    if(fechaStr != ""){
+        size_t inicio = 0;
+        const char delimitador = '-';
+        unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
 
-    Fecha fechaCreada(dia, mes, anio);
+        Fecha fechaCreada(dia, mes, anio);
 
-    return fechaCreada;
+        return fechaCreada;
+    }
 }
+
+
+
+
+
+
