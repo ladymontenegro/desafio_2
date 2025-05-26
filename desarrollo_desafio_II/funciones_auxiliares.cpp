@@ -64,10 +64,14 @@ Fecha crearFecha(const string &fechaStr){
     if(fechaStr != ""){
         size_t inicio = 0;
         const char delimitador = '-';
+
+        unsigned char dia = '';
+        unsigned char mes = '';
+        unsigned short anio = 0;
         try {
-            unsigned char dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-            unsigned char mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-            unsigned short anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+            dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+            mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+            anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
         } catch (const exception& e) {
             throw invalid_argument("Error en formato numerico: " + string(e.what()));
         }
