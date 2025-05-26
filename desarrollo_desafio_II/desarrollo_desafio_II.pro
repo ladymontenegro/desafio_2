@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        funciones_auxiliares.cpp \
+        funciones_auxiliares_carga_datos.cpp \
         funciones_carga_datos.cpp \
         main.cpp
 
