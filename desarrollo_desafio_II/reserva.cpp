@@ -64,19 +64,9 @@ unsigned int Reserva::getMontoPago() const
 }
 
 // Metodos set
-void Reserva::setCodigoReserva(const string &codigoReservaConsulta, const string &nuevoCodigoReserva)
+void Reserva::setCodigoReserva(const string &_codigoReserva)
 {
-    // Aquí la lógica asume que 'codigoReservaConsulta' es el código actual
-    // del objeto para saber si es el que se debe modificar.
-    // Esto es común si se busca un objeto Reserva por su código y luego se modifica.
-    if (this->codigoReserva == codigoReservaConsulta) {
-        this->codigoReserva = nuevoCodigoReserva;
-        cout << "Codigo de reserva " << codigoReservaConsulta << " actualizado a "
-             << nuevoCodigoReserva << endl;
-    } else {
-        cout << "No se encontró la reserva con el código: " << codigoReservaConsulta
-             << " para actualizar." << endl;
-    }
+    codigoReserva = _codigoReserva;
 }
 
 void Reserva::setMetodoPago(const string &_metodoPago)
@@ -110,47 +100,13 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 }
 
 // Otros metodos
-void Reserva::setMetodoPago(const string &codigoReservaConsulta, const string &nuevoMetodoPago)
+void Reserva::mostrarReserva()
 {
-    if (this->codigoReserva == codigoReservaConsulta) {
-        this->metodoPago = nuevoMetodoPago;
-        cout << "Metodo de pago de reserva " << codigoReservaConsulta << " actualizado a "
-             << nuevoMetodoPago << endl;
-    } else {
-        cout << "No se encontró la reserva con el código: " << codigoReservaConsulta
-             << " para actualizar." << endl;
-    }
-}
-
-void Reserva::setCodigoAlojamiento(const string &codigoReservaConsulta,
-                                   Alojamiento *nuevoAlojamiento)
-{
-    if (this->codigoReserva == codigoReservaConsulta) {
-        if (nuevoAlojamiento) {
-            this->alojamientoAsociado = nuevoAlojamiento;
-            cout << "Codigo de alojamiento de reserva " << codigoReservaConsulta
-                 << " actualizado a " << nuevoAlojamiento->getCodigo() << endl;
-        } else {
-            cout << "ERROR: El nuevo alojamiento proporcionado es nulo para la reserva "
-                 << codigoReservaConsulta << endl;
-        }
-    } else {
-        cout << "No se encontro la reserva con el codigo: " << codigoReservaConsulta
-             << " para actualizar." << endl;
-    }
-}
-
-string Reserva::getDocumentoAnfitrion(const string &codigoReservaConsulta) const
-{
-    cout << "Buscando documento del anfitrión para la reserva: " << codigoReservaConsulta << endl;
-    // Esta función probablemente necesite acceder a una lista de alojamientos o anfitriones
-    // para encontrar el anfitrión asociado al codigoAlojamiento de esta reserva.
-    // La implementación aquí es un placeholder.
-    if (this->codigoReserva == codigoReservaConsulta) {
-        // En un sistema real, aquí buscarías el Anfitrion a través del codigoAlojamiento
-        // y devolverías su documento.
-        cout << "  (Lógica para buscar anfitrión por alojamiento NO implementada aquí)" << endl;
-        return "DOCUMENTO_ANFITRION_EJEMPLO"; // Placeholder
-    }
-    return ""; // Si la reserva no coincide o no se encuentra el anfitrión
+    cout << "Codigo: " << codigoReserva << endl;
+    cout << "Fecha Entrada: " << fechaEntrada << endl;
+    cout << "Estadia: " << estadiaNoches << " noches" << endl;
+    cout << "Fecha de Pago: " << fechaPago << endl;
+    cout << "Metodo Pago: " << metodoPago << endl;
+    cout << "Monto del Pago: " << montoPago << endl;
+    cout << "Inquietudes: " << inquietudes << endl;
 }

@@ -1,4 +1,5 @@
 #include "anfitrion.h"
+#include <iostream>
 
 //Constructor de la clase
 Anfitrion::Anfitrion(const string &_documento, float _puntuacion, unsigned short _antiguedadMeses)
@@ -14,10 +15,34 @@ Anfitrion::Anfitrion(const string &_documento, float _puntuacion, unsigned short
     }
 }
 
+//Constructor copia
+
+Anfitrion::Anfitrion(const Anfitrion &otro)
+    : documento(otro.documento)
+    , puntuacion(otro.puntuacion)
+    , antiguedadMeses(otro.antiguedadMeses)
+    , capacidadDeAlojamientos(otro.capacidadDeAlojamientos)
+    , alojamientosCargados(otro.alojamientosCargados)
+{
+    alojamientos = new Alojamiento *[capacidadDeAlojamientos];
+
+    for (unsigned short i = 0; i < alojamientosCargados; ++i) {
+        if (otro.alojamientos[i] != nullptr) {
+            alojamientos[i] = new Alojamiento(*(otro.alojamientos[i]));
+        } else {
+            alojamientos[i] = nullptr;
+        }
+    }
+
+    for (unsigned short i = alojamientosCargados; i < capacidadDeAlojamientos; ++i) {
+        alojamientos[i] = nullptr;
+    }
+}
+
 //Destructor de la clase
 Anfitrion::~Anfitrion()
 {
-    for (short i = 0; i < alojamientosCargados; ++i) {
+    for (unsigned short i = 0; i < alojamientosCargados; ++i) {
         if (alojamientos[i] != nullptr) {
             delete alojamientos[i];
             alojamientos[i] = nullptr;
@@ -48,12 +73,12 @@ unsigned short Anfitrion::getAlojamientosCargados() const
     return alojamientosCargados;
 }
 
-unsigned short Anfitrion::getcapacidadDeAlojamientos() const
+unsigned short Anfitrion::getCapacidadDeAlojamientos() const
 {
     return capacidadDeAlojamientos;
 }
 
-Alojamiento *Anfitrion::getAlojamiento(short indice) const
+Alojamiento *Anfitrion::getAlojamiento(unsigned short indice) const
 {
     if (indice >= 0 && indice < capacidadDeAlojamientos) {
         return alojamientos[indice];
@@ -85,18 +110,51 @@ void Anfitrion::setAlojamientos(Alojamiento **_alojamientos)
 }
 
 // Otros metodos
-void Anfitrion::consultarReservas() const {}
+void Anfitrion::consultarReservas(string _codigoAlojamiento) const
+{
+    for (unsigned short i = 0; i < alojamientosCargados; i++) {
+        if (alojamientos[i]->getCodigo() == _codigoAlojamiento) {
+            Reserva **punteroArregloReservas = alojamientos[i]->getReservas();
+            unsigned short reservasActualesAlojamiento = alojamientos[i]->getReservasCargadas();
+            if (reservasActualesAlojamiento == 0) {
+                cout << "\nNo hay reservas cargadas para el alojamiento con codigo "
+                     << _codigoAlojamiento << endl;
+                return;
+            }
+            cout << "\n--- Reservas para Alojamiento con codigo " << _codigoAlojamiento << " ---"
+                 << endl;
+            for (unsigned short j = 0; j < reservasActualesAlojamiento; j++) {
+                (*punteroArregloReservas[j]).mostrarReserva();
+            }
+            break;
+        }
+    }
+}
 
-void Anfitrion::anularReserva() {}
-
-bool Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
+void Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
 {
     if (alojamientosCargados >= capacidadDeAlojamientos) {
-        return false; //limite alcanzado
+        int nuevaCapacidad = 0;
+        if (capacidadDeAlojamientos == 0) {
+            nuevaCapacidad = 1;
+        } else {
+            nuevaCapacidad = capacidadDeAlojamientos * 2;
+        }
+
+        Alojamiento **nuevoArreglo = new Alojamiento *[nuevaCapacidad];
+
+        for (int i = 0; i < alojamientosCargados; i++) {
+            nuevoArreglo[i] = alojamientos[i];
+        }
+
+        for (int i = alojamientosCargados; i < nuevaCapacidad; i++) {
+            nuevoArreglo[i] = nullptr;
+        }
+        delete[] alojamientos;
+
+        alojamientos = nuevoArreglo;
+        capacidadDeAlojamientos = nuevaCapacidad;
     }
     alojamientos[alojamientosCargados] = _alojamiento;
     alojamientosCargados++;
-    return true;
 }
-
-void Anfitrion::consultarAlojamiento(unsigned short indice) {}

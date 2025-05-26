@@ -224,3 +224,9 @@ bool Fecha::operator<=(const Fecha &_fecha) const
     }
     return false;
 }
+
+ostream &operator<<(ostream &os, const Fecha &fecha)
+{
+    os << fecha.getDia() << "-" << fecha.getMes() << "-" << fecha.getAnio();
+    return os;
+}

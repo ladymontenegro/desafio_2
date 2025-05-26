@@ -21,6 +21,9 @@ public:
             const string &_documento,
             float _puntuacion,
             unsigned short _antioguedadMeses);
+
+    Huesped(const Huesped &otro);
+
     ~Huesped();
 
     // Metodos get

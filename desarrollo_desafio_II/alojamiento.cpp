@@ -1,7 +1,5 @@
 #include "alojamiento.h"
 
-#include <iostream>
-
 //Constructor de la clase
 Alojamiento::Alojamiento(const string &_nombre,
                          const string &_amenidades,
@@ -21,11 +19,40 @@ Alojamiento::Alojamiento(const string &_nombre,
     , direccion(_direccion)
     , documentoAnfitrion(_documentoAnfitrion)
     , precioNoche(_precioNoche)
-    , reservasCargadas(0)
     , capacidadReservas(100)
+    , reservasCargadas(0)
 {
     reservas = new Reserva *[capacidadReservas];
     for (short i = 0; i < capacidadReservas; i++) {
+        reservas[i] = nullptr;
+    }
+}
+
+// Costructor de copia
+Alojamiento::Alojamiento(const Alojamiento &otro)
+    : nombre(otro.nombre)
+    , amenidades(otro.amenidades)
+    , codigo(otro.codigo)
+    , municipio(otro.municipio)
+    , departamento(otro.departamento)
+    , tipo(otro.tipo)
+    , direccion(otro.direccion)
+    , documentoAnfitrion(otro.documentoAnfitrion)
+    , precioNoche(otro.precioNoche)
+    , capacidadReservas(otro.capacidadReservas)
+    , reservasCargadas(otro.reservasCargadas)
+{
+    reservas = new Reserva *[capacidadReservas];
+
+    for (unsigned short i = 0; i < reservasCargadas; ++i) {
+        if (otro.reservas[i] != nullptr) {
+            reservas[i] = new Reserva(*(otro.reservas[i]));
+        } else {
+            reservas[i] = nullptr;
+        }
+    }
+
+    for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
         reservas[i] = nullptr;
     }
 }
@@ -89,6 +116,16 @@ unsigned int Alojamiento::getPrecioNoche() const
     return precioNoche;
 }
 
+unsigned short Alojamiento::getCapacidadReservas() const
+{
+    return capacidadReservas;
+}
+
+unsigned short Alojamiento::getReservasCargadas() const
+{
+    return reservasCargadas;
+}
+
 Reserva **Alojamiento::getReservas() const
 {
     return reservas;
@@ -121,11 +158,13 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
     Fecha fechaSalida = fechaInicio.sumarDias(_cantidadDeNoches);
 
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-        Fecha entradaExistente = reservas[i]->getFechaEntrada();
-        Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
+        if (reservas[i] != nullptr) {
+            Fecha entradaExistente = reservas[i]->getFechaEntrada();
+            Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
 
-        if (!(fechaSalida <= entradaExistente || fechaInicio >= salidaExistente)) {
-            return false; // Hay traslape
+            if (!(fechaSalida <= entradaExistente || fechaInicio >= salidaExistente)) {
+                return false; // Hay traslape
+            }
         }
     }
     return true; // No hay traslape con ninguna reserva
@@ -134,12 +173,12 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
 void Alojamiento::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-        if ((reservas[i]->getCodigoReserva()) == _codigoReserva) {
-            reservas[i] = nullptr;
-            cout << "Reserva eliminada" << endl;
+        if (reservas[i] != nullptr) {
+            if ((reservas[i]->getCodigoReserva()) == _codigoReserva) {
+                reservas[i] = nullptr;
+            }
         }
     }
-    cout << "No existe alguna reserva con este codigo..." << endl;
 }
 
 void Alojamiento::agregarReserva(Reserva *nuevaReserva)

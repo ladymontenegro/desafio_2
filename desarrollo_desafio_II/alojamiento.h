@@ -32,9 +32,7 @@ public:
                 const string &_documentoAnfitrion,
                 unsigned int _precioNoche);
 
-    Alojamiento(const Alojamiento &other);
-
-    Alojamiento &operator=(const Alojamiento &other);
+    Alojamiento(const Alojamiento &otro);
 
     ~Alojamiento();
 
@@ -48,7 +46,8 @@ public:
     const string getDireccion();
     const string getDocumentoAnfitrion();
     unsigned int getPrecioNoche() const;
-    unsigned short getCantidaDeAlojamientos() const;
+    unsigned short getCapacidadReservas() const;
+    unsigned short getReservasCargadas() const;
     Reserva **getReservas() const;
 
     // Metodos set

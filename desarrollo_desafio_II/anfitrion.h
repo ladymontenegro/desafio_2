@@ -18,28 +18,27 @@ private:
 public:
     Anfitrion(const string &_documento, float _puntuacion, unsigned short _antiguedadMeses);
 
+    Anfitrion(const Anfitrion &otro);
+
     ~Anfitrion();
 
     // Metodos get
     const string getDocumento();
     float getPuntuacion() const;
     unsigned short getAntiguedadMeses() const;
-    unsigned short getcapacidadDeAlojamientos() const;
+    unsigned short getCapacidadDeAlojamientos() const;
     unsigned short getAlojamientosCargados() const;
-    Alojamiento *getAlojamiento(short indice) const;
+    Alojamiento *getAlojamiento(unsigned short indice) const;
     Alojamiento **getAlojamimentos() const;
 
     // Metodos set
-    void setDocumento(const string &_documento);
     void setPuntuacion(float _puntuacion);
     void setAntiguedadMeses(unsigned short _antiguedadMeses);
     void setAlojamientos(Alojamiento **_alojamientos);
 
     // Otros metodos
-    void consultarReservas() const;
-    void anularReserva();
-    bool agregarAlojamiento(Alojamiento *_alojamiento);
-    void consultarAlojamiento(unsigned short indice);
+    void consultarReservas(string _codigoAlojamiento) const;
+    void agregarAlojamiento(Alojamiento *_alojamiento);
 };
 
 #endif // ANFITRION_H

@@ -1,6 +1,9 @@
 #ifndef FECHA_H
 #define FECHA_H
 
+#include <ostream>
+using namespace std;
+
 class Fecha
 {
 private:
@@ -34,6 +37,7 @@ public:
     bool operator==(const Fecha &_fecha) const;
     bool operator>=(const Fecha &_fecha) const;
     bool operator<=(const Fecha &_fecha) const;
+    friend ostream &operator<<(ostream &os, const Fecha &fecha);
 };
 
 #endif // FECHA_H

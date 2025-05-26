@@ -8,12 +8,34 @@ Huesped::Huesped(const string &_nombre,
     , documento(_documento)
     , puntuacion(_puntuacion)
     , antiguedadMeses(_antiguedadMeses)
-    //, reservas(nullptr)
     , capacidadReservas(20)
     , reservasCargadas(0)
 {
     reservas = new Reserva *[capacidadReservas];
     for (unsigned short i = 0; i < capacidadReservas; i++) {
+        reservas[i] = nullptr;
+    }
+}
+
+Huesped::Huesped(const Huesped &otro)
+    : nombre(otro.nombre)
+    , documento(otro.documento)
+    , puntuacion(otro.puntuacion)
+    , antiguedadMeses(otro.antiguedadMeses)
+    , capacidadReservas(otro.capacidadReservas)
+    , reservasCargadas(otro.reservasCargadas)
+{
+    reservas = new Reserva *[capacidadReservas];
+
+    for (unsigned short i = 0; i < reservasCargadas; ++i) {
+        if (otro.reservas[i] != nullptr) {
+            reservas[i] = new Reserva(*(otro.reservas[i]));
+        } else {
+            reservas[i] = nullptr;
+        }
+    }
+
+    for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
         reservas[i] = nullptr;
     }
 }
@@ -89,7 +111,16 @@ void Huesped::setReservas(Reserva **_reservas)
 
 // Otros metodos
 
-void Huesped::eliminarReserva(string codigoReserva) {}
+void Huesped::eliminarReserva(string _codigoReserva)
+{
+    for (unsigned short i = 0; i < reservasCargadas; i++) {
+        if (reservas[i] != nullptr) {
+            if (reservas[i]->getCodigoReserva() == _codigoReserva) {
+                reservas[i] = nullptr;
+            }
+        }
+    }
+}
 
 void Huesped::agregarReserva(Reserva *nuevaReserva)
 {
