@@ -8,8 +8,27 @@ Huesped::Huesped(const string &_nombre,
     , documento(_documento)
     , puntuacion(_puntuacion)
     , antiguedadMeses(_antiguedadMeses)
-    , reservas(nullptr)
-{}
+    //, reservas(nullptr)
+    , capacidadReservas(20)
+    , reservasCargadas(0)
+{
+    reservas = new Reserva *[capacidadReservas];
+    for (unsigned short i = 0; i < capacidadReservas; i++) {
+        reservas[i] = nullptr;
+    }
+}
+
+Huesped::~Huesped()
+{
+    for (short i = 0; i < reservasCargadas; ++i) {
+        if (reservas[i] != nullptr) {
+            delete reservas[i];
+            reservas[i] = nullptr;
+        }
+    }
+    delete[] reservas;
+    reservas = nullptr;
+}
 
 // Metodos get
 const string Huesped::getNombre()

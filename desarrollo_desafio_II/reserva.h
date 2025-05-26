@@ -43,7 +43,7 @@ public:
     unsigned int getMontoPago() const;
 
     // Metodos set
-    void setCodigoReserva(const string &_codigoReserva);
+    void setCodigoReserva(const string &codigoReservaConsulta, const string &nuevoCodigoReserva);
     void setMetodoPago(const string &_metodoPago);
     void setInquietudes(const string &_inquietudes);
     void setFechaEntrada(const Fecha &_fechaEntrada);
@@ -52,12 +52,10 @@ public:
     void setMontoPago(unsigned int _montoPago);
 
     // Otros metodos
-    void setCodigoReserva(const string &codigoReserva,
-                          const string &nuevoCodigoReserva); // Sobrecarga
+    void setCodigoAlojamiento(const string &codigoReservaConsulta,
+                              Alojamiento *nuevoAlojamiento); // Sobrecarga
     void setMetodoPago(const string &codigoReserva,
                        const string &nuevoMetodoPago); // Sobrecarga
-    void setCodigoAlojamiento(const string &codigoReserva,
-                              const string &nuevoCodigoAlojamiento); // Sobrecarga
     string getDocumentoAnfitrion(const string &codigoReserva) const;
 };
 

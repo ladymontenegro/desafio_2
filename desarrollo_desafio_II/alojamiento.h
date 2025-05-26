@@ -17,7 +17,8 @@ private:
     const string direccion;
     const string documentoAnfitrion;
     unsigned int precioNoche;
-    unsigned short cantidadDeReservas;
+    unsigned short capacidadReservas;
+    unsigned short reservasCargadas;
     Reserva **reservas;
 
 public:
@@ -30,6 +31,10 @@ public:
                 const string &_direccion,
                 const string &_documentoAnfitrion,
                 unsigned int _precioNoche);
+
+    Alojamiento(const Alojamiento &other);
+
+    Alojamiento &operator=(const Alojamiento &other);
 
     ~Alojamiento();
 
@@ -55,6 +60,7 @@ public:
     // Otros metodos
     bool alojamientoDisponible(Fecha fechaInicio, unsigned int cantidadDeNoches) const;
     void eliminarReserva(string codigoReserva);
+    void agregarReserva(Reserva *nuevaReserva);
 };
 
 #endif // ALOJAMIENTO_H

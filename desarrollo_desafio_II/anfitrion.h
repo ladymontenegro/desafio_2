@@ -11,15 +11,12 @@ private:
     const string documento;
     float puntuacion;
     unsigned short antiguedadMeses;
-    unsigned short cantidadDeAlojamientos;
+    unsigned short capacidadDeAlojamientos;
     unsigned short alojamientosCargados;
     Alojamiento **alojamientos;
 
 public:
-    Anfitrion(const string &_documento,
-              float _puntuacion,
-              unsigned short _antiguedadMeses,
-              unsigned short alojamientosCargados);
+    Anfitrion(const string &_documento, float _puntuacion, unsigned short _antiguedadMeses);
 
     ~Anfitrion();
 
@@ -27,8 +24,9 @@ public:
     const string getDocumento();
     float getPuntuacion() const;
     unsigned short getAntiguedadMeses() const;
-    unsigned short getCantidadDeAlojamientos() const;
+    unsigned short getcapacidadDeAlojamientos() const;
     unsigned short getAlojamientosCargados() const;
+    Alojamiento *getAlojamiento(short indice) const;
     Alojamiento **getAlojamimentos() const;
 
     // Metodos set

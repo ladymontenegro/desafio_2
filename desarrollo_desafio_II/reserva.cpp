@@ -1,4 +1,5 @@
 #include "Reserva.h"
+#include "alojamiento.h"
 #include "fecha.h"
 #include <iostream>
 #include <string>
@@ -63,9 +64,19 @@ unsigned int Reserva::getMontoPago() const
 }
 
 // Metodos set
-void Reserva::setCodigoReserva(const string &_codigoReserva)
+void Reserva::setCodigoReserva(const string &codigoReservaConsulta, const string &nuevoCodigoReserva)
 {
-    codigoReserva = _codigoReserva;
+    // Aquí la lógica asume que 'codigoReservaConsulta' es el código actual
+    // del objeto para saber si es el que se debe modificar.
+    // Esto es común si se busca un objeto Reserva por su código y luego se modifica.
+    if (this->codigoReserva == codigoReservaConsulta) {
+        this->codigoReserva = nuevoCodigoReserva;
+        cout << "Codigo de reserva " << codigoReservaConsulta << " actualizado a "
+             << nuevoCodigoReserva << endl;
+    } else {
+        cout << "No se encontró la reserva con el código: " << codigoReservaConsulta
+             << " para actualizar." << endl;
+    }
 }
 
 void Reserva::setMetodoPago(const string &_metodoPago)
@@ -99,21 +110,6 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 }
 
 // Otros metodos
-void Reserva::setCodigoReserva(const string &codigoReservaConsulta, const string &nuevoCodigoReserva)
-{
-    // Aquí la lógica asume que 'codigoReservaConsulta' es el código actual
-    // del objeto para saber si es el que se debe modificar.
-    // Esto es común si se busca un objeto Reserva por su código y luego se modifica.
-    if (this->codigoReserva == codigoReservaConsulta) {
-        this->codigoReserva = nuevoCodigoReserva;
-        cout << "Codigo de reserva " << codigoReservaConsulta << " actualizado a "
-             << nuevoCodigoReserva << endl;
-    } else {
-        cout << "No se encontró la reserva con el código: " << codigoReservaConsulta
-             << " para actualizar." << endl;
-    }
-}
-
 void Reserva::setMetodoPago(const string &codigoReservaConsulta, const string &nuevoMetodoPago)
 {
     if (this->codigoReserva == codigoReservaConsulta) {
@@ -127,14 +123,19 @@ void Reserva::setMetodoPago(const string &codigoReservaConsulta, const string &n
 }
 
 void Reserva::setCodigoAlojamiento(const string &codigoReservaConsulta,
-                                   const string &nuevoCodigoAlojamiento)
+                                   Alojamiento *nuevoAlojamiento)
 {
     if (this->codigoReserva == codigoReservaConsulta) {
-        this->alojamientoAsociado = nuevoCodigoAlojamiento;
-        cout << "Codigo de alojamiento de reserva " << codigoReservaConsulta << " actualizado a "
-             << nuevoCodigoAlojamiento << endl;
+        if (nuevoAlojamiento) {
+            this->alojamientoAsociado = nuevoAlojamiento;
+            cout << "Codigo de alojamiento de reserva " << codigoReservaConsulta
+                 << " actualizado a " << nuevoAlojamiento->getCodigo() << endl;
+        } else {
+            cout << "ERROR: El nuevo alojamiento proporcionado es nulo para la reserva "
+                 << codigoReservaConsulta << endl;
+        }
     } else {
-        cout << "No se encontró la reserva con el código: " << codigoReservaConsulta
+        cout << "No se encontro la reserva con el codigo: " << codigoReservaConsulta
              << " para actualizar." << endl;
     }
 }

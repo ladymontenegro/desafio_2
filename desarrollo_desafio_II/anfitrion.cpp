@@ -1,23 +1,30 @@
 #include "anfitrion.h"
 
-Anfitrion::Anfitrion(const string &_documento,
-                     float _puntuacion,
-                     unsigned short _antiguedadMeses,
-                     unsigned short _alojamientosCargados)
+//Constructor de la clase
+Anfitrion::Anfitrion(const string &_documento, float _puntuacion, unsigned short _antiguedadMeses)
     : documento(_documento)
     , puntuacion(_puntuacion)
     , antiguedadMeses(_antiguedadMeses)
-    , cantidadDeAlojamientos(0)
-    , alojamientosCargados(_alojamientosCargados)
+    , capacidadDeAlojamientos(10)
+    , alojamientosCargados(0)
 {
-    alojamientos = new Alojamiento *[cantidadDeAlojamientos];
+    alojamientos = new Alojamiento *[capacidadDeAlojamientos];
+    for (unsigned short i = 0; i < capacidadDeAlojamientos; i++) {
+        alojamientos[i] = nullptr;
+    }
 }
 
+//Destructor de la clase
 Anfitrion::~Anfitrion()
 {
-    for (short i = 0; i < cantidadDeAlojamientos; ++i) {
-        delete alojamientos[i]; //libera cada Alojamiento
+    for (short i = 0; i < alojamientosCargados; ++i) {
+        if (alojamientos[i] != nullptr) {
+            delete alojamientos[i];
+            alojamientos[i] = nullptr;
+        }
     }
+    delete[] alojamientos;
+    alojamientos = nullptr;
 }
 
 // Metodos get
@@ -39,6 +46,20 @@ unsigned short Anfitrion::getAntiguedadMeses() const
 unsigned short Anfitrion::getAlojamientosCargados() const
 {
     return alojamientosCargados;
+}
+
+unsigned short Anfitrion::getcapacidadDeAlojamientos() const
+{
+    return capacidadDeAlojamientos;
+}
+
+Alojamiento *Anfitrion::getAlojamiento(short indice) const
+{
+    if (indice >= 0 && indice < capacidadDeAlojamientos) {
+        return alojamientos[indice];
+    } else {
+        return nullptr;
+    }
 }
 
 Alojamiento **Anfitrion::getAlojamimentos() const
@@ -70,11 +91,11 @@ void Anfitrion::anularReserva() {}
 
 bool Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
 {
-    if (alojamientosCargados >= cantidadDeAlojamientos) {
+    if (alojamientosCargados >= capacidadDeAlojamientos) {
         return false; //limite alcanzado
     }
-    alojamientos[cantidadDeAlojamientos] = _alojamiento;
-    cantidadDeAlojamientos++;
+    alojamientos[alojamientosCargados] = _alojamiento;
+    alojamientosCargados++;
     return true;
 }
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+//Constructor de la clase
 Alojamiento::Alojamiento(const string &_nombre,
                          const string &_amenidades,
                          const string &_codigo,
@@ -20,16 +21,26 @@ Alojamiento::Alojamiento(const string &_nombre,
     , direccion(_direccion)
     , documentoAnfitrion(_documentoAnfitrion)
     , precioNoche(_precioNoche)
-    , cantidadDeReservas(0)
+    , reservasCargadas(0)
+    , capacidadReservas(100)
 {
-    reservas = new Reserva *[cantidadDeReservas];
+    reservas = new Reserva *[capacidadReservas];
+    for (short i = 0; i < capacidadReservas; i++) {
+        reservas[i] = nullptr;
+    }
 }
 
+//Destructor de la clase
 Alojamiento::~Alojamiento()
 {
-    for (unsigned short i = 0; i < cantidadDeReservas; ++i) {
-        delete reservas[i]; //libera cada Alojamiento
+    for (unsigned short i = 0; i < reservasCargadas; ++i) {
+        if (reservas[i] != nullptr) {
+            delete reservas[i]; //libera la memoria del objeto reserva
+            reservas[i] = nullptr;
+        }
     }
+    delete[] reservas;
+    reservas = nullptr;
 }
 
 // Metodos get
@@ -72,6 +83,7 @@ const string Alojamiento::getDocumentoAnfitrion()
 {
     return documentoAnfitrion;
 }
+
 unsigned int Alojamiento::getPrecioNoche() const
 {
     return precioNoche;
@@ -108,7 +120,7 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
 {
     Fecha fechaSalida = fechaInicio.sumarDias(_cantidadDeNoches);
 
-    for (unsigned short i = 0; i < cantidadDeReservas; i++) {
+    for (unsigned short i = 0; i < reservasCargadas; i++) {
         Fecha entradaExistente = reservas[i]->getFechaEntrada();
         Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
 
@@ -121,11 +133,39 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
 
 void Alojamiento::eliminarReserva(string _codigoReserva)
 {
-    for (unsigned short i = 0; i < cantidadDeReservas; i++) {
+    for (unsigned short i = 0; i < reservasCargadas; i++) {
         if ((reservas[i]->getCodigoReserva()) == _codigoReserva) {
             reservas[i] = nullptr;
             cout << "Reserva eliminada" << endl;
         }
     }
     cout << "No existe alguna reserva con este codigo..." << endl;
+}
+
+void Alojamiento::agregarReserva(Reserva *nuevaReserva)
+{
+    if (reservasCargadas >= capacidadReservas) {
+        int nuevaCapacidad;
+        if (capacidadReservas == 0) {
+            nuevaCapacidad = 1;
+        } else {
+            nuevaCapacidad = capacidadReservas * 2;
+        }
+
+        Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
+
+        for (int i = 0; i < reservasCargadas; i++) {
+            nuevoArreglo[i] = reservas[i];
+        }
+
+        for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
+            nuevoArreglo[i] = nullptr;
+        }
+        delete[] reservas;
+
+        reservas = nuevoArreglo;
+        capacidadReservas = nuevaCapacidad;
+    }
+    reservas[reservasCargadas] = nuevaReserva;
+    reservasCargadas++;
 }
