@@ -1,0 +1,6 @@
+#ifndef FUNCIONESPRINCIPALES_H
+#define FUNCIONESPRINCIPALES_H
+
+void menuAnfitrion();
+
+#endif // FUNCIONESPRINCIPALES_H
