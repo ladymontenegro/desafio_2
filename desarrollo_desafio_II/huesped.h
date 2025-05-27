@@ -47,6 +47,7 @@ public:
 
     void eliminarReserva(string codigoReserva);
     void agregarReserva(Reserva *nuevaReserva);
+    void mostrarReservas();
 };
 
 #endif // HUESPED_H

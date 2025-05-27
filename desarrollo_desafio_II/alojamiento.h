@@ -60,6 +60,7 @@ public:
     bool alojamientoDisponible(Fecha fechaInicio, unsigned int cantidadDeNoches) const;
     void eliminarReserva(string codigoReserva);
     void agregarReserva(Reserva *nuevaReserva);
+    void mostrarAlojamiento();
 };
 
 #endif // ALOJAMIENTO_H

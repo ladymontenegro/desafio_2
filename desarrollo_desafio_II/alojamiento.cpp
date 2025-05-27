@@ -1,4 +1,5 @@
 #include "alojamiento.h"
+#include <iostream>
 
 //Constructor de la clase
 Alojamiento::Alojamiento(const string &_nombre,
@@ -24,6 +25,7 @@ Alojamiento::Alojamiento(const string &_nombre,
 {
     reservas = new Reserva *[capacidadReservas];
     for (short i = 0; i < capacidadReservas; i++) {
+        contadorIteraciones++;
         reservas[i] = nullptr;
     }
 }
@@ -45,6 +47,7 @@ Alojamiento::Alojamiento(const Alojamiento &otro)
     reservas = new Reserva *[capacidadReservas];
 
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
+        contadorIteraciones++;
         if (otro.reservas[i] != nullptr) {
             reservas[i] = new Reserva(*(otro.reservas[i]));
         } else {
@@ -53,6 +56,7 @@ Alojamiento::Alojamiento(const Alojamiento &otro)
     }
 
     for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
+        contadorIteraciones++;
         reservas[i] = nullptr;
     }
 }
@@ -61,6 +65,7 @@ Alojamiento::Alojamiento(const Alojamiento &otro)
 Alojamiento::~Alojamiento()
 {
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
+        contadorIteraciones++;
         if (reservas[i] != nullptr) {
             delete reservas[i]; //libera la memoria del objeto reserva
             reservas[i] = nullptr;
@@ -158,6 +163,7 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
     Fecha fechaSalida = fechaInicio.sumarDias(_cantidadDeNoches);
 
     for (unsigned short i = 0; i < reservasCargadas; i++) {
+        contadorIteraciones++;
         if (reservas[i] != nullptr) {
             Fecha entradaExistente = reservas[i]->getFechaEntrada();
             Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
@@ -173,12 +179,21 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
 void Alojamiento::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
+        contadorIteraciones++;
         if (reservas[i] != nullptr) {
-            if ((reservas[i]->getCodigoReserva()) == _codigoReserva) {
+            if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
+                if (i != reservasCargadas - 1) {
+                    for (unsigned short j = i; j < reservasCargadas - 1; j++) {
+                        contadorIteraciones++;
+                        reservas[j] = reservas[j + 1];
+                    }
+                    reservas[reservasCargadas - 1] = nullptr;
+                }
             }
         }
     }
+    reservasCargadas--;
 }
 
 void Alojamiento::agregarReserva(Reserva *nuevaReserva)
@@ -194,10 +209,12 @@ void Alojamiento::agregarReserva(Reserva *nuevaReserva)
         Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
 
         for (int i = 0; i < reservasCargadas; i++) {
+            contadorIteraciones++;
             nuevoArreglo[i] = reservas[i];
         }
 
         for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
+            contadorIteraciones++;
             nuevoArreglo[i] = nullptr;
         }
         delete[] reservas;
@@ -207,4 +224,17 @@ void Alojamiento::agregarReserva(Reserva *nuevaReserva)
     }
     reservas[reservasCargadas] = nuevaReserva;
     reservasCargadas++;
+}
+
+void Alojamiento::mostrarAlojamiento()
+{
+    cout << "Nombre: " << nombre << endl;
+    cout << "Codigo: " << codigo << endl;
+    cout << "Tipo: " << tipo << endl;
+    cout << "Precio por noche: " << precioNoche << endl;
+    cout << "Departamento: " << departamento << endl;
+    cout << "Municipio: " << municipio << endl;
+    cout << "Direccion: " << direccion << endl;
+    cout << "Documento del anfitrion: " << documentoAnfitrion << endl;
+    cout << "Amenidades: " << amenidades << endl << endl;
 }

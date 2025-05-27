@@ -107,6 +107,7 @@ Fecha Fecha::sumarDias(unsigned int diasASumar)
         = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     while (diasASumar > 0) {
+        contadorIteraciones++;
         unsigned char diasMaximosMesActual;
 
         // Determinar dias maximos del mes actual, considerando años bisiestos
