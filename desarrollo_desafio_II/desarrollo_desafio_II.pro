@@ -5,7 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
     main.cpp\
+    menuHuesped.cpp\
     menuAnfitrion.cpp\
+    funciones_carga_archivos.cpp\
     funciones_auxiliares_carga_datos.cpp\
     funciones_carga_datos.cpp\
     alojamiento.cpp\
@@ -22,3 +24,4 @@ HEADERS += \
     fecha.h\
     huesped.h\
     reserva.h
+
