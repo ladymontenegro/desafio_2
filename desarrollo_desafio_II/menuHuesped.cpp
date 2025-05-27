@@ -107,22 +107,6 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
                     cout << "Error: Opcion invalida. Intente de nuevo.\n";
                 }
             }
-
-            if(opcionBusqueda == "1"){
-                cout << ;
-            }
-
-            else if(opcionBusqueda == "2"){
-                cout << ;
-            }
-
-            else if(opcionBusqueda == "3"){
-                cout << ;
-            }
-
-            else if(opcionBusqueda == "4"){
-                cout << ;
-            }
         }
 
         else if(opcion == "2"){
