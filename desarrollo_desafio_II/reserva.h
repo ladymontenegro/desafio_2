@@ -52,6 +52,7 @@ public:
     void setMontoPago(unsigned int _montoPago);
 
     // Otros metodos
+    string reservaString();
     void mostrarReserva();
 };
 

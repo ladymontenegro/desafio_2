@@ -1,5 +1,6 @@
 #include "fecha.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 Fecha::Fecha(unsigned char _dia, unsigned char _mes, unsigned short _anio)
@@ -224,6 +225,11 @@ bool Fecha::operator<=(const Fecha &_fecha) const
         }
     }
     return false;
+}
+
+string Fecha::fechaString()
+{
+    return to_string(dia) + "-" + to_string(mes) + "-" + to_string(anio);
 }
 
 ostream &operator<<(ostream &os, const Fecha &fecha)

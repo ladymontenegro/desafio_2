@@ -31,6 +31,7 @@ public:
     // Validaciones
     bool esBisiesto(unsigned short _anio);
     bool validacionFecha();
+    string fechaString();
 
     // Sobrecarga de operadores
 

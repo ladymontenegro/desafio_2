@@ -100,6 +100,14 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 }
 
 // Otros metodos
+
+string Reserva::reservaString()
+{
+    return fechaEntrada.fechaString() + "," + codigoReserva + "," + huespedAsociado->getDocumento
+           + "," + metodoPago + "," + fechaPago.fechaString() + "," + to_string(montoPago) + ","
+           + inquietudes;
+}
+
 void Reserva::mostrarReserva()
 {
     cout << "Codigo: " << codigoReserva << endl;
