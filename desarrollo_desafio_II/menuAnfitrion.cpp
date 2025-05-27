@@ -1,3 +1,6 @@
+#include "alojamiento.h"
+#include "fecha.h"
+#include "reserva.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -22,9 +25,17 @@ void menuAnfitrion()
                 cout << "Para salir por favor ingrese la fecha del dia de hoy: ";
                 while (true) {
                     cout << "Para salir por favor ingrese la fecha del dia de hoy: ";
-                    cin >> fechaHoy;
+                    cout << "Ingrese el dia: ";
+                    unsigned short dia;
+                    cin >> dia;
+                    cout << "Ingrese el mes: ";
+                    unsigned short mes;
+                    cin >> mes;
+                    cout << "Ingrese el año: ";
+                    unsigned int anio;
+                    cin >> anio;
                     try {
-                        Fecha fechaCorte = crearFecha(fechaHoy);
+                        Fecha fechaCorte(dia, mes, anio);
                         break;
                     } catch (const invalid_argument &excepcion) {
                         cerr << "Fecha invalida. Intente de nuevo por favor" << excepcion.what()
@@ -41,31 +52,6 @@ void menuAnfitrion()
                 break;
             } else if (opcion == "1") {
                 while (true) {
-                    for (unsigned short i = 0;
-                         i < arregloAnfitriones[indiceAnfitrion]->getAlojamientosCargados;
-                         i++) {
-                        arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->mostrarAlojamiento();
-                    }
-                    cout << "Ingrese el codigo del alojamiento que desea ver las reservas: ";
-                    string codigoAlojamiento;
-                    cin >> codigoAlojamiento;
-                    cout << "Sus reservas son:" << endl;
-                    for (unsigned short i = 0;
-                         i < arregloAnfitriones[indiceAnfitrion]->getAlojamientosCargados;
-                         i++) {
-                        if (arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->getCodigo
-                            == codigoAlojamiento) {
-                            for (unsigned short j = 0; j < arregloAnfitriones[indiceAnfitrion]
-                                                               ->getAlojamiento(i)
-                                                               ->getReservasCargadas;
-                                 j++) {
-                                Reserva **reservasAlojamiento = arregloAnfitriones[indiceAnfitrion]
-                                                                    ->getAlojamiento(i)
-                                                                    ->getReservas();
-                                reservasAlojamiento[j]->mostarReserva;
-                            }
-                        }
-                    }
                     cout << "Escriba por favor el codigo de la reserva que desea anular: ";
                     string codigoReserva;
                     cin >> codigoReserva;
@@ -89,6 +75,30 @@ void menuAnfitrion()
                 cout << "Sus reservas son:" << endl;
                 //mostar reservas
                 cout << endl << endl;
+            }
+        }
+    }
+}
+
+void filtro()
+{
+    for (unsigned short i = 0; i < arregloAnfitriones[indiceAnfitrion]->getAlojamientosCargados;
+         i++) {
+        arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->mostrarAlojamiento();
+    }
+    cout << "Ingrese el codigo del alojamiento que desea ver las reservas: ";
+    string codigoAlojamiento;
+    cin >> codigoAlojamiento;
+    cout << "Sus reservas son:" << endl;
+    for (unsigned short i = 0; i < arregloAnfitriones[indiceAnfitrion]->getAlojamientosCargados;
+         i++) {
+        if (arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->getCodigo == codigoAlojamiento) {
+            for (unsigned short j = 0;
+                 j < arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->getReservasCargadas;
+                 j++) {
+                Reserva **reservasAlojamiento
+                    = arregloAnfitriones[indiceAnfitrion]->getAlojamiento(i)->getReservas();
+                reservasAlojamiento[j]->mostarReserva;
             }
         }
     }
