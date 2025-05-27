@@ -150,29 +150,3 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
         }
     }
 }
-
-Fecha crearFecha(const string &fechaStr){
-    if(fechaStr.empty()){
-        throw invalid_argument("Error: La fecha no puede estar vacia");
-    }
-    size_t inicio = 0;
-    const char delimitador = '-';
-
-    unsigned char dia = '';
-    unsigned char mes = '';
-    unsigned short anio = 0;
-    try {
-        dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-    } catch (const invalid_argument& excepcion) {
-        throw invalid_argument("Error en formato numerico: " + string(excepcion.what()));
-    } catch (const out_of_range& excepcion) {
-        throw out_of_range("Error en el valor numerico de la fecha (fuera de rango): " + string(excepcion.what()));
-    } catch (const exception& excepcion) {
-        throw runtime_error("Error inesperado al procesar la fecha: " + string(excepcion.what()));
-    }
-
-    Fecha fechaCreada(dia, mes, anio);
-    return fechaCreada;
-}
