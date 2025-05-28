@@ -31,7 +31,6 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
         }
 
         if(opcion == "1"){
-            Fecha fechaEntrada;
             string municipio = "";
             unsigned short estadiaNoches = 0;
             bool fechaValida = false;
@@ -42,14 +41,14 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
                 cout << "Ingrese la fecha en la cual se desea hospedar (DD-MM-AAAA): ";
                 getline(cin, _fechaEntrada);
                 try {
-                    fechaEntrada = crearFecha(_fechaEntrada);
+                    Fecha fechaEntrada = crearFecha(_fechaEntrada);
                     fechaValida = true;
                 } catch (const invalid_argument &e){
                     cerr << "Error: " << e.what() << ". Por favor, intente de nuevo" << endl;
                 } catch (const runtime_error &e) {
                     cerr << "Error: " << e.what() << "Contacte a soporte tecnico" << endl;
                 } catch (const exception &e){
-                    cerr << "Ha ocurrido un error desconocido: " << e.what() << ". Por favor, intente de nuevo" << ednl;
+                    cerr << "Ha ocurrido un error desconocido: " << e.what() << ". Por favor, intente de nuevo" << endl;
                 }
             }
 
@@ -119,7 +118,7 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
             arregloHuespedes[indice] -> mostrarReservas();
 
             while(!reservaEliminada){
-                cout << "Ingrese el codigo de la reserva que desea eliminar: ";
+                cout << "\nIngrese el codigo de la reserva que desea eliminar: ";
                 getline(cin, codigoReserva);
                 reservaEliminada = eliminarReservaTodos(codigoReserva, arregloReservasGlobales, reservasCargadas);
 

@@ -4,6 +4,7 @@
 #include "reserva.h"
 #include <iostream>
 #include <string>
+#include "funcionesAuxiliares.h"
 using namespace std;
 
 void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
@@ -23,29 +24,19 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrio
             cout << "Opcion invalida. Ingrese un numero del 1 al 3 " << endl;
         } else {
             if (opcion == "3") {
-                cout << "Para salir por favor ingrese la fecha del dia de hoy: ";
+                string fechaStr ="";
                 while (true) {
-                    cout << "Ingrese el dia: ";
-                    unsigned short dia;
-                    cin >> dia;
-                    cout << "Ingrese el mes: ";
-                    unsigned short mes;
-                    cin >> mes;
-                    cout << "Ingrese el año: ";
-                    unsigned int anio;
-                    cin >> anio;
+                    cout << "Para salir por favor ingrese la fecha del dia de hoy (DD-MM-AAAA): ";
+                    getline(cin, fechaStr);
                     try {
-                        Fecha fechaCorte(dia, mes, anio);
+                        Fecha fechaCorte = crearFecha(fechaStr);
                         break;
                     } catch (const invalid_argument &excepcion) {
-                        cerr << "Fecha invalida. Intente de nuevo por favor" << excepcion.what()
-                             << " Intente de nuevo" << endl;
+                        cerr << "Fecha invalida. Intente de nuevo por favor" << excepcion.what() << endl;
                     } catch (const runtime_error &excepcion) {
-                        cerr << "Error de ejcucion. Intente de nuevo por favor" << excepcion.what()
-                             << " Intente de nuevo" << endl;
+                        cerr << "Error de ejcucion. Intente de nuevo por favor" << excepcion.what() << endl;
                     } catch (const exception &excepcion) {
-                        cerr << "Ha ocurrido un error desconocido: " << excepcion.what()
-                             << " Intente de nuevo" << endl;
+                        cerr << "Ha ocurrido un error desconocido: " << excepcion.what() << endl;
                     }
                 }
                 cout << "Saliendo del menu de anfitriones" << endl;
@@ -69,8 +60,8 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrio
                     }
                 }
             } else if (opcion == "2") {
-                cout << "Sus reservas son:" << endl;
-                opcion1(arregloAnfitriones, indiceAnfitrion);
+                cout << "Sus alojamientos son:" << endl;
+                opcion2(arregloAnfitriones, indiceAnfitrion);
                 cout << endl << endl;
             }
         }
@@ -154,15 +145,15 @@ void opcion2(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
         return;
     }
 
-    // Iterar sobre cada alojamiento del anfitrión
+    // Iterar sobre cada alojamiento del anfitrion
     for (unsigned short i = 0; i < anfitrionActual->getAlojamientosCargados(); ++i) {
         Alojamiento *currentAlojamiento = anfitrionActual->getAlojamiento(i);
 
         if (currentAlojamiento != nullptr) {
-            // Mostrar código y nombre del alojamiento
+            // Mostrar codigo y nombre del alojamiento
             cout << "\n---------------------------------------------------" << endl;
             cout << "Alojamiento: " << currentAlojamiento->getNombre()
-                 << " (Código: " << currentAlojamiento->getCodigo() << ")" << endl;
+                 << " (Codigo: " << currentAlojamiento->getCodigo() << ")" << endl;
             cout << "---------------------------------------------------" << endl;
 
             // Mostrar las reservas de este alojamiento

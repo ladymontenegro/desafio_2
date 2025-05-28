@@ -27,7 +27,6 @@ public:
             const string &_inquietudes,
             const Fecha &_fechaEntrada,
             const Fecha &_fechaPago,
-            Fecha &_fechaFin,
             unsigned short _estadiaNoches,
             unsigned int _montoPago,
             Huesped *_huespedAsociado,
@@ -36,7 +35,7 @@ public:
     // Metodos get
     string getCodigoReserva() const;
     string getMetodoPago() const;
-    Alojamiento* getAlojamiento();
+    Alojamiento* getAlojamiento() const;
     string getCodigoAlojamientoAsociado() const;
     Huesped* getHuesped() const;
     string getDocumentoHuespedAsociado() const;

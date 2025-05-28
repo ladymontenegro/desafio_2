@@ -108,7 +108,7 @@ Fecha Fecha::sumarDias(unsigned int diasASumar)
         = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     while (diasASumar > 0) {
-        contadorIteraciones++;
+
         unsigned char diasMaximosMesActual;
 
         // Determinar dias maximos del mes actual, considerando años bisiestos
@@ -220,6 +220,22 @@ bool Fecha::operator<=(const Fecha &_fecha) const
             return true;
         } else if (this->mes == _fecha.getMes()) {
             if (this->dia <= _fecha.getDia()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Fecha::operator<(const Fecha &_fecha) const
+{
+    if (this->anio < _fecha.getAnio()) {
+        return true;
+    } else if (this->anio == _fecha.getAnio()) {
+        if (this->mes < _fecha.getMes()) {
+            return true;
+        } else if (this->mes == _fecha.getMes()) {
+            if (this->dia < _fecha.getDia()) {
                 return true;
             }
         }

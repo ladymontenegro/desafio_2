@@ -14,7 +14,7 @@ Huesped::Huesped(const string &_nombre,
 {
     reservas = new Reserva *[capacidadReservas];
     for (unsigned short i = 0; i < capacidadReservas; i++) {
-        contadorIteraciones++;
+
         reservas[i] = nullptr;
     }
 }
@@ -30,7 +30,7 @@ Huesped::Huesped(const Huesped &otro)
     reservas = new Reserva *[capacidadReservas];
 
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
-        contadorIteraciones++;
+
         if (otro.reservas[i] != nullptr) {
             reservas[i] = new Reserva(*(otro.reservas[i]));
         } else {
@@ -39,7 +39,7 @@ Huesped::Huesped(const Huesped &otro)
     }
 
     for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
-        contadorIteraciones++;
+
         reservas[i] = nullptr;
     }
 }
@@ -47,7 +47,7 @@ Huesped::Huesped(const Huesped &otro)
 Huesped::~Huesped()
 {
     for (short i = 0; i < reservasCargadas; ++i) {
-        contadorIteraciones++;
+
         if (reservas[i] != nullptr) {
             delete reservas[i];
             reservas[i] = nullptr;
@@ -119,13 +119,13 @@ void Huesped::setReservas(Reserva **_reservas)
 void Huesped::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-        contadorIteraciones++;
+
         if (reservas[i] != nullptr) {
             if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
                 if (i != reservasCargadas - 1) {
                     for (unsigned short j = i; j < reservasCargadas - 1; j++) {
-                        contadorIteraciones++;
+                
                         reservas[j] = reservas[j + 1];
                     }
                     reservas[reservasCargadas - 1] = nullptr;
@@ -149,12 +149,12 @@ void Huesped::agregarReserva(Reserva *nuevaReserva)
         Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
 
         for (int i = 0; i < reservasCargadas; i++) {
-            contadorIteraciones++;
+    
             nuevoArreglo[i] = reservas[i];
         }
 
         for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
-            contadorIteraciones++;
+    
             nuevoArreglo[i] = nullptr;
         }
         delete[] reservas;
@@ -170,7 +170,6 @@ void Huesped::mostrarReservas()
 {
     cout << "\n--- Reservas Vigentes ---";
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-        contadorIteraciones++;
         cout << "-------------------------------------";
         reservas[i]->mostrarReserva();
     }

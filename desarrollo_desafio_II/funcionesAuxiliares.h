@@ -7,19 +7,21 @@
 #include "huesped.h"
 
 //FUNCIONES DE MENUS
-void menuAnfitrion();
+void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
 void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales, unsigned short indice, unsigned short reservasCargadas);
+void opcion1(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
+void opcion2(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
 
 //FUNCIONES AUXILIARES
 string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool esCampoObligatorio = true);
 Fecha crearFecha(const string &fechaStr);
-bool eliminarReservaTodos(string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas);
+bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas);
 template<typename T>
 void redimensionarArreglo(unsigned short& capacidad, unsigned short elementosCargados, T**& arreglo);
 
 //FUNCIONES DE VALIDACION
 bool esDocumento(const string& linea, size_t& inicio);
-bool tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados);
+char tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados);
 
 //FUNCIONES DE BUSQUEDA
 short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes);

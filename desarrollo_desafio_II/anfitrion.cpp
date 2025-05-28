@@ -11,7 +11,7 @@ Anfitrion::Anfitrion(const string &_documento, float _puntuacion, unsigned short
 {
     alojamientos = new Alojamiento *[capacidadDeAlojamientos];
     for (unsigned short i = 0; i < capacidadDeAlojamientos; i++) {
-        contadorIteraciones++;
+
         alojamientos[i] = nullptr;
     }
 }
@@ -28,7 +28,7 @@ Anfitrion::Anfitrion(const Anfitrion &otro)
     alojamientos = new Alojamiento *[capacidadDeAlojamientos];
 
     for (unsigned short i = 0; i < alojamientosCargados; ++i) {
-        contadorIteraciones++;
+
         if (otro.alojamientos[i] != nullptr) {
             alojamientos[i] = new Alojamiento(*(otro.alojamientos[i]));
         } else {
@@ -37,7 +37,7 @@ Anfitrion::Anfitrion(const Anfitrion &otro)
     }
 
     for (unsigned short i = alojamientosCargados; i < capacidadDeAlojamientos; ++i) {
-        contadorIteraciones++;
+
         alojamientos[i] = nullptr;
     }
 }
@@ -46,7 +46,7 @@ Anfitrion::Anfitrion(const Anfitrion &otro)
 Anfitrion::~Anfitrion()
 {
     for (unsigned short i = 0; i < alojamientosCargados; ++i) {
-        contadorIteraciones++;
+
         if (alojamientos[i] != nullptr) {
             delete alojamientos[i];
             alojamientos[i] = nullptr;
@@ -116,7 +116,7 @@ void Anfitrion::setAlojamientos(Alojamiento **_alojamientos)
 void Anfitrion::consultarReservas(string _codigoAlojamiento) const
 {
     for (unsigned short i = 0; i < alojamientosCargados; i++) {
-        contadorIteraciones++;
+
         if (alojamientos[i]->getCodigo() == _codigoAlojamiento) {
             Reserva **punteroArregloReservas = alojamientos[i]->getReservas();
             unsigned short reservasActualesAlojamiento = alojamientos[i]->getReservasCargadas();
@@ -128,7 +128,7 @@ void Anfitrion::consultarReservas(string _codigoAlojamiento) const
             cout << "\n--- Reservas para Alojamiento con codigo " << _codigoAlojamiento << " ---"
                  << endl;
             for (unsigned short j = 0; j < reservasActualesAlojamiento; j++) {
-                contadorIteraciones++;
+        
                 (*punteroArregloReservas[j]).mostrarReserva();
             }
             break;
@@ -136,7 +136,7 @@ void Anfitrion::consultarReservas(string _codigoAlojamiento) const
     }
 }
 
-void Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
+bool Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
 {
     if (alojamientosCargados >= capacidadDeAlojamientos) {
         int nuevaCapacidad = 0;
@@ -149,12 +149,12 @@ void Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
         Alojamiento **nuevoArreglo = new Alojamiento *[nuevaCapacidad];
 
         for (int i = 0; i < alojamientosCargados; i++) {
-            contadorIteraciones++;
+    
             nuevoArreglo[i] = alojamientos[i];
         }
 
         for (int i = alojamientosCargados; i < nuevaCapacidad; i++) {
-            contadorIteraciones++;
+    
             nuevoArreglo[i] = nullptr;
         }
         delete[] alojamientos;
@@ -164,4 +164,5 @@ void Anfitrion::agregarAlojamiento(Alojamiento *_alojamiento)
     }
     alojamientos[alojamientosCargados] = _alojamiento;
     alojamientosCargados++;
+    return true;
 }

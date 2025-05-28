@@ -262,12 +262,8 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                 try { //este try es solo para los errores que puede haber en la linea que se lee
                     string _fechaEntradaStr = obtenerDato(linea, inicio, delimitador);
                     Fecha fechaEntrada = crearFecha(_fechaEntradaStr);
-
                     string codigoReserva = obtenerDato(linea, inicio, delimitador);
                     string documentoHuesped = obtenerDato(linea, inicio, delimitador);
-                    string metodoPago = obtenerDato(linea, inicio, delimitador);
-                    string _fechaPagoStr = obtenerDato(linea, inicio, delimitador);
-                    Fecha fechaPago = crearFecha(_fechaPagoStr);
 
                     // Campos numericos (usando la plantilla sin unsigned long intermedio)
                     unsigned short estadiaNoches;
@@ -278,10 +274,14 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                         throw runtime_error("Estadia de noche invalida: " + string(e.what()));
                     }
 
+                    string metodoPago = obtenerDato(linea, inicio, delimitador);
+                    string _fechaPagoStr = obtenerDato(linea, inicio, delimitador);
+                    Fecha fechaPago = crearFecha(_fechaPagoStr);
+
                     unsigned int montoPago;
                     try {
                         string montoPago_str = obtenerDato(linea, inicio, delimitador);
-                        montoPago = static_cast<unsigned short>(stoi(montoPago_str));
+                        montoPago = static_cast<unsigned int>(stoi(montoPago_str));
                     } catch(const exception& e) {
                         throw runtime_error("Monto de pago invalida: " + string(e.what()));
                     }
@@ -316,6 +316,8 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
 
                     nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago, estadiaNoches, montoPago, huespedActual, alojamientoActual);
                     arregloReservas[reservasCargadas] = nuevaReserva;
+                    alojamientoActual -> agregarReserva(nuevaReserva);
+                    huespedActual -> agregarReserva(nuevaReserva);
                     reservasCargadas++;
 
                 } catch (const exception& e) {

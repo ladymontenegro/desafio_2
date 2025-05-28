@@ -30,7 +30,7 @@ string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool e
     return atributo;
 }
 
-bool eliminarReservaTodos(string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas) {
+bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas) {
     for (int i = 0; i < reservasCargadas; ++i) {
         if ((arregloReservasGlobal[i] != nullptr) && (arregloReservasGlobal[i] -> getCodigoReserva() == codigoReserva)) {
             //eliminar la reserva del huesped
@@ -44,6 +44,11 @@ bool eliminarReservaTodos(string &codigoReserva, Reserva **&arregloReservasGloba
             //eliminar la reserva del arreglo global
             delete arregloReservasGlobal[i];
             arregloReservasGlobal[i] = nullptr;
+
+            for (unsigned short j = i; j < reservasCargadas - 1; j++) {
+                arregloReservasGlobal[j] = arregloReservasGlobal[j + 1];
+            }
+            arregloReservasGlobal[reservasCargadas - 1] = nullptr;
 
             return true;
         }
@@ -65,7 +70,7 @@ bool esDocumento(const string& linea, size_t& inicio){
     return documento;
 }
 
-bool tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados){
+unsigned short tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados){
     string documento = "";
     bool documentoValido = false;
 
@@ -73,7 +78,7 @@ bool tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, 
         cout << "Ingrese su numero de documento: ";
         getline(cin, documento);
 
-        if((documento.length) == 10){
+        if((documento.length()) == 10){
             documentoValido = true;
         } else {
             cout << "Documento invalido. Asegurese que la longitud del documento sea diez" << endl;
@@ -84,7 +89,7 @@ bool tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, 
         if(arregloAnfitriones[i] != nullptr){
             if((arregloAnfitriones[i] -> getDocumento()) == documento){
                 indice = i;
-                return true;
+                return '1';
             }
         }
     }
@@ -94,11 +99,11 @@ bool tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, 
         if(arregloHuespedes[i] != nullptr){
             if((arregloHuespedes[i] -> getDocumento()) == documento){
                 indice = i;
-                return true;
+                return '2';
             }
         }
     }
-    return false;
+    return '3';
 }
 
 Fecha crearFecha(const string &fechaStr){
@@ -108,8 +113,8 @@ Fecha crearFecha(const string &fechaStr){
     size_t inicio = 0;
     const char delimitador = '-';
 
-    unsigned char dia = '';
-    unsigned char mes = '';
+    unsigned char dia = 0;
+    unsigned char mes = 0;
     unsigned short anio = 0;
     try {
         dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
@@ -222,19 +227,6 @@ void filtroReservas(Anfitrion **&arregloAnfitriones, const unsigned short &anfit
 }
 
 //FUNCIONES DE ORDENAMIENTO DE DATOS
-void mergeSort(Reserva** reservas, unsigned short izquierda, unsigned short derecha) {
-    if (izquierda < derecha) {
-        unsigned short medio = izquierda + (derecha - izquierda) / 2;
-
-        //ordenar primera y segunda mitad
-        mergeSort(reservas, izquierda, medio);
-        mergeSort(reservas, medio + 1, derecha);
-
-        //mezclar las mitades ordenadas
-        mezclar(reservas, izquierda, medio, derecha);
-    }
-}
-
 void mezclar(Reserva** reservas, unsigned short izquierda, unsigned short medio, unsigned short derecha) {
     //tamanio de los subarreglos temporal
     unsigned short n1 = medio - izquierda + 1;
@@ -281,6 +273,19 @@ void mezclar(Reserva** reservas, unsigned short izquierda, unsigned short medio,
     //liberar memoria de los arreglos temporales
     delete[] izquierdaArr;
     delete[] derechaArr;
+}
+
+void mergeSort(Reserva** reservas, unsigned short izquierda, unsigned short derecha) {
+    if (izquierda < derecha) {
+        unsigned short medio = izquierda + (derecha - izquierda) / 2;
+
+        //ordenar primera y segunda mitad
+        mergeSort(reservas, izquierda, medio);
+        mergeSort(reservas, medio + 1, derecha);
+
+        //mezclar las mitades ordenadas
+        mezclar(reservas, izquierda, medio, derecha);
+    }
 }
 
 void ordenarReservasDeAlojamiento(Alojamiento* alojamiento) {

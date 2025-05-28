@@ -38,7 +38,7 @@ public:
 
     // Otros metodos
     void consultarReservas(string _codigoAlojamiento) const;
-    void agregarAlojamiento(Alojamiento *_alojamiento);
+    bool agregarAlojamiento(Alojamiento *_alojamiento);
 };
 
 #endif // ANFITRION_H

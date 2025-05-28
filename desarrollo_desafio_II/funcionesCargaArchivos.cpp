@@ -61,7 +61,7 @@ void moverReservasHistoricas(Fecha fechaActual, Reserva** reservasGlobales, unsi
 
     //eliminar las reservas movidas al historico en los arreglos de cada clase que lo tiene
     for (unsigned short i = 0; i < contadorHistoricas; i++) {
-        bool reservaEliminada = eliminarReservaTodos(historicas[i] -> getCodigoReserva(), reservasGlobales, totalReservasGlobales);
+        bool reservaEliminada = eliminarReservaTodos((historicas[i] -> getCodigoReserva()), reservasGlobales, totalReservasGlobales);
     }
 
     //libero la memoria del arrerglo temporal

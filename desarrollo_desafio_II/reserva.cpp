@@ -1,6 +1,7 @@
 #include "Reserva.h"
 #include "alojamiento.h"
 #include "fecha.h"
+#include "huesped.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -10,7 +11,6 @@ Reserva::Reserva(const string &_codigoReserva,
                  const string &_inquietudes,
                  const Fecha &_fechaEntrada,
                  const Fecha &_fechaPago,
-                 Fecha &_fechaFin,
                  unsigned short _estadiaNoches,
                  unsigned int _montoPago,
                  Huesped *_huespedAsociado,
@@ -21,14 +21,12 @@ Reserva::Reserva(const string &_codigoReserva,
     , inquietudes(_inquietudes)
     , fechaEntrada(_fechaEntrada)
     , fechaPago(_fechaPago)
+    , fechaFin(fechaEntrada.sumarDias(_estadiaNoches))
     , estadiaNoches(_estadiaNoches)
     , montoPago(_montoPago)
     , huespedAsociado(_huespedAsociado)
     , alojamientoAsociado(_alojamientoAsociado)
-
-{
-    _fechaFin = fechaEntrada.sumarDias(_estadiaNoches);
-}
+{}
 
 // Metodos get
 string Reserva::getCodigoReserva() const
@@ -128,10 +126,10 @@ string Reserva::reservaString()
 
 void Reserva::mostrarReserva()
 {
-    cout << "Codigo: " << codigoReserva << endl;
-    cout << "Fecha Entrada: " << fechaEntrada << endl;
+    cout << "\nCodigo: " << codigoReserva << endl;
+    cout << "Fecha Entrada: " << fechaEntrada.fechaString() << endl;
     cout << "Estadia: " << estadiaNoches << " noches" << endl;
-    cout << "Fecha de Pago: " << fechaPago << endl;
+    cout << "Fecha de Pago: " << fechaPago.fechaString() << endl;
     cout << "Metodo Pago: " << metodoPago << endl;
     cout << "Monto del Pago: " << montoPago << endl;
     cout << "Inquietudes: " << inquietudes << endl;
