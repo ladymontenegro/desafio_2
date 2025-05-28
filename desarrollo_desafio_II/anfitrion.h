@@ -29,7 +29,7 @@ public:
     unsigned short getCapacidadDeAlojamientos() const;
     unsigned short getAlojamientosCargados() const;
     Alojamiento *getAlojamiento(unsigned short indice) const;
-    Alojamiento **getAlojamimentos() const;
+    Alojamiento **getAlojamientos() const;
 
     // Metodos set
     void setPuntuacion(float _puntuacion);

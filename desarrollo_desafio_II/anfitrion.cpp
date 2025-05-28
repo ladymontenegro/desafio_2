@@ -91,13 +91,12 @@ Alojamiento *Anfitrion::getAlojamiento(unsigned short indice) const
     }
 }
 
-Alojamiento **Anfitrion::getAlojamimentos() const
+Alojamiento **Anfitrion::getAlojamientos() const
 {
     return alojamientos;
 }
 
 // Metodos set
-
 void Anfitrion::setPuntuacion(float _puntuacion)
 {
     puntuacion = _puntuacion;

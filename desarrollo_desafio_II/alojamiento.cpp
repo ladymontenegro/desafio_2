@@ -176,13 +176,14 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
     return true; // No hay traslape con ninguna reserva
 }
 
-void Alojamiento::eliminarReserva(string _codigoReserva)
+bool Alojamiento::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
         contadorIteraciones++;
         if (reservas[i] != nullptr) {
             if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
+                return true;
                 if (i != reservasCargadas - 1) {
                     for (unsigned short j = i; j < reservasCargadas - 1; j++) {
                         contadorIteraciones++;
@@ -190,7 +191,7 @@ void Alojamiento::eliminarReserva(string _codigoReserva)
                     }
                     reservas[reservasCargadas - 1] = nullptr;
                 }
-            }
+            } else {return false;}
         }
     }
     reservasCargadas--;

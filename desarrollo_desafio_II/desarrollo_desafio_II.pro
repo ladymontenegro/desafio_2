@@ -4,12 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+    funcionesAuxiliares.cpp \
+    funcionesCargaArchivos.cpp \
+    funcionesCargaDatos.cpp \
     main.cpp\
     menuHuesped.cpp\
     menuAnfitrion.cpp\
-    funciones_carga_archivos.cpp\
-    funciones_auxiliares_carga_datos.cpp\
-    funciones_carga_datos.cpp\
     alojamiento.cpp\
     anfitrion.cpp\
     fecha.cpp\
@@ -17,11 +17,10 @@ SOURCES += \
     reserva.cpp
 
 HEADERS += \
-    funcionesPrincipales.h\
-    header_funciones.h\
     alojamiento.h\
     anfitrion.h\
     fecha.h\
+    funcionesAuxiliares.h \
     huesped.h\
     reserva.h
 

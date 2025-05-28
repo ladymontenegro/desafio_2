@@ -15,6 +15,7 @@ private:
     string inquietudes;
     Fecha fechaEntrada;
     Fecha fechaPago;
+    Fecha fechaFin;
     unsigned short estadiaNoches;
     unsigned int montoPago;
     Huesped *huespedAsociado;
@@ -26,6 +27,7 @@ public:
             const string &_inquietudes,
             const Fecha &_fechaEntrada,
             const Fecha &_fechaPago,
+            Fecha &_fechaFin,
             unsigned short _estadiaNoches,
             unsigned int _montoPago,
             Huesped *_huespedAsociado,
@@ -34,11 +36,14 @@ public:
     // Metodos get
     string getCodigoReserva() const;
     string getMetodoPago() const;
+    Alojamiento* getAlojamiento();
     string getCodigoAlojamientoAsociado() const;
+    Huesped* getHuesped() const;
     string getDocumentoHuespedAsociado() const;
     string getInquietudes() const;
     Fecha getFechaEntrada() const;
     Fecha getFechaPago() const;
+    Fecha getFechaFin() const;
     unsigned short getEstadiaNoches() const;
     unsigned int getMontoPago() const;
 
