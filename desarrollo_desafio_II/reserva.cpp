@@ -103,7 +103,7 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 
 string Reserva::reservaString()
 {
-    return fechaEntrada.fechaString() + "," + codigoReserva + "," + huespedAsociado->getDocumento
+    return fechaEntrada.fechaString() + "," + codigoReserva + "," + huespedAsociado->getDocumento()
            + "," + metodoPago + "," + fechaPago.fechaString() + "," + to_string(montoPago) + ","
            + inquietudes;
 }
