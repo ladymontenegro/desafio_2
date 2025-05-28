@@ -1,4 +1,4 @@
-#include "funcionesPrincipales.h"
+#include "funcionesAuxiliares.h"
 #include <iostream>
 using namespace std;
 

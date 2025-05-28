@@ -2,9 +2,11 @@
 #include <stdexcept>
 #include <string>
 
+#include "funcionesAuxiliares.h"
+
 using namespace std;
 
-void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales, unsigned short indice){
+void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales, unsigned short indice, unsigned short reservasCargadas){
     //debe recibir los arreglo y el indice del huesped
     string opcion = "";
     bool sistemaActivo = true;
@@ -119,7 +121,7 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
             while(!reservaEliminada){
                 cout << "Ingrese el codigo de la reserva que desea eliminar: ";
                 getline(cin, codigoReserva);
-                reservaEliminada = eliminarReservaTodos(codigoReserva);
+                reservaEliminada = eliminarReservaTodos(codigoReserva, arregloReservasGlobales, reservasCargadas);
 
                 if(!reservaEliminada){
                     cout << "Error: No fue posible eliminar la reserva. Asegurese que el codigo ingresado fue el correcto" << endl;

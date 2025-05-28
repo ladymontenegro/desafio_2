@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 #include <stdexcept> //pa las excepciones estandar
-#include "header_funciones.h"
+
+#include "funcionesAuxiliares.h"
+
 using namespace std;
 
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES

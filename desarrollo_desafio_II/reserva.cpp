@@ -10,6 +10,7 @@ Reserva::Reserva(const string &_codigoReserva,
                  const string &_inquietudes,
                  const Fecha &_fechaEntrada,
                  const Fecha &_fechaPago,
+                 Fecha &_fechaFin,
                  unsigned short _estadiaNoches,
                  unsigned int _montoPago,
                  Huesped *_huespedAsociado,
@@ -25,7 +26,9 @@ Reserva::Reserva(const string &_codigoReserva,
     , huespedAsociado(_huespedAsociado)
     , alojamientoAsociado(_alojamientoAsociado)
 
-{}
+{
+    _fechaFin = fechaEntrada.sumarDias(_estadiaNoches);
+}
 
 // Metodos get
 string Reserva::getCodigoReserva() const
@@ -53,6 +56,11 @@ Fecha Reserva::getFechaPago() const
     return fechaPago;
 }
 
+Fecha Reserva::getFechaFin() const
+{
+    return fechaFin;
+}
+
 unsigned short Reserva::getEstadiaNoches() const
 {
     return estadiaNoches;
@@ -61,6 +69,16 @@ unsigned short Reserva::getEstadiaNoches() const
 unsigned int Reserva::getMontoPago() const
 {
     return montoPago;
+}
+
+Huesped* Reserva::getHuesped() const
+{
+    return huespedAsociado;
+}
+
+Alojamiento* Reserva::getAlojamiento() const
+{
+    return alojamientoAsociado;
 }
 
 // Metodos set
