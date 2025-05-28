@@ -7,10 +7,11 @@
 #include "funcionesAuxiliares.h"
 using namespace std;
 
-void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
+void menuAnfitrion(Anfitrion **arregloAnfitriones,
+                   unsigned short indiceAnfitrion,
+                   Reserva **arregloReservasGlobales,
+                   unsigned short &totalReservasGlobales)
 {
-    int fechaHoy;
-
     while (true) {
         cout << "---MENU ANFITRIONES---" << endl;
         cout << "1. Anular una reservacion" << endl;
@@ -24,12 +25,13 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrio
             cout << "Opcion invalida. Ingrese un numero del 1 al 3 " << endl;
         } else {
             if (opcion == "3") {
-                string fechaStr ="";
+                string fechaCorte = "";
                 while (true) {
                     cout << "Para salir por favor ingrese la fecha del dia de hoy (DD-MM-AAAA): ";
-                    getline(cin, fechaStr);
+                    cin.ignore(1000, '\n');
+                    getline(cin, fechaCorte);
                     try {
-                        Fecha fechaCorte = crearFecha(fechaStr);
+                        Fecha fechaCorte = crearFecha(fechaCorte);
                         break;
                     } catch (const invalid_argument &excepcion) {
                         cerr << "Fecha invalida. Intente de nuevo por favor" << excepcion.what() << endl;
@@ -39,6 +41,7 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrio
                         cerr << "Ha ocurrido un error desconocido: " << excepcion.what() << endl;
                     }
                 }
+                moverReservasHistoricas(fechaCorte, arregloReservasGlobales, totalReservasGlobales);
                 cout << "Saliendo del menu de anfitriones" << endl;
                 break;
             } else if (opcion == "1") {
@@ -170,5 +173,5 @@ void opcion2(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
         }
     }
     cout << "\n--- Fin de la consulta de reservas ---" << endl;
-    cout << endl; // Salto de línea para mejor formato en el menú principal
+    cout << endl;
 }
