@@ -2,6 +2,8 @@
 #include "alojamiento.h"
 #include "fecha.h"
 #include "huesped.h"
+#include "variablesIteracionesMemoria.h"
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -120,7 +122,7 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 string Reserva::reservaString()
 {
     return fechaEntrada.fechaString() + "," + codigoReserva + "," + huespedAsociado->getDocumento()
-           + "," + metodoPago + "," + fechaPago.fechaString() + "," + to_string(montoPago) + ","
+           + "," + to_string(estadiaNoches) + "," + metodoPago + "," + fechaPago.fechaString() + "," + to_string(montoPago) + ","
            + inquietudes;
 }
 

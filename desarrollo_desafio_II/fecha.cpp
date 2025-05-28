@@ -1,17 +1,19 @@
 #include "fecha.h"
+#include "variablesIteracionesMemoria.h"
 #include <iostream>
 #include <string>
 using namespace std;
 
 Fecha::Fecha(unsigned char _dia, unsigned char _mes, unsigned short _anio)
-    : dia(_dia)
-    , mes(_mes)
-    , anio(_anio)
+    : dia(_dia), mes(_mes), anio(_anio)
 {
     if (!validacionFecha()) {
         cout << "La fecha ingresada no es valida. Por favor, reingrese la fecha:" << endl;
     }
 }
+
+//constructor por defecto
+Fecha::Fecha() : dia(0), mes(0), anio(0) {}
 
 // Metodos get
 unsigned char Fecha::getDia() const

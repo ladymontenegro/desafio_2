@@ -2,11 +2,12 @@
 #include <stdexcept>
 #include <string>
 
+#include "variablesIteracionesMemoria.h"
 #include "funcionesAuxiliares.h"
 
 using namespace std;
 
-void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales, unsigned short indice, unsigned short reservasCargadas){
+void menuHuesped(Anfitrion **&arregloAnfitriones, Reserva **&arregloReservasGlobales, Huesped* huespedActual, unsigned short &reservasCargadas, unsigned short anfitrionesCargados){
     //debe recibir los arreglo y el indice del huesped
     string opcion = "";
     bool sistemaActivo = true;
@@ -31,8 +32,19 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
         }
 
         if(opcion == "1"){
+            Fecha fechaEntrada;
+            Fecha fechaPago;
+            string codigoAlojamiento = "";
             string municipio = "";
+            string codigoReserva;
+            string metodoPago = "";
+            string inquietudes = "";
+            string respuesta = "";
+            short indiceAnfitrion = 0;
+            short indiceAlojamiento = 0;
+            unsigned int montoPago = 0;
             unsigned short estadiaNoches = 0;
+            bool codigoValido = false;
             bool fechaValida = false;
             bool estadiaValida = false;
 
@@ -41,7 +53,7 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
                 cout << "Ingrese la fecha en la cual se desea hospedar (DD-MM-AAAA): ";
                 getline(cin, _fechaEntrada);
                 try {
-                    Fecha fechaEntrada = crearFecha(_fechaEntrada);
+                    fechaEntrada = crearFecha(_fechaEntrada);
                     fechaValida = true;
                 } catch (const invalid_argument &e){
                     cerr << "Error: " << e.what() << ". Por favor, intente de nuevo" << endl;
@@ -90,8 +102,8 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
             getline(cin, municipio);
 
             cout << "Filtros de Busqueda"
-                    "\n1. Precio alojamiento"
-                    "\n2. Puntuacion de Anfitrion"
+                    "\n1. Precio maximo por alojamiento"
+                    "\n2. Puntuacion minima de Anfitrion"
                     "\n3. Ambos"
                     "\n4. No aplicar filtros de busqueda" << endl;
 
@@ -108,6 +120,252 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
                     cout << "Error: Opcion invalida. Intente de nuevo.\n";
                 }
             }
+
+            if(opcionBusqueda == "1"){
+                string costoMaximoStr = "";
+                unsigned int costoMaximo= 0;
+                while(true){
+                    cout << "Ingrese el precio maximo por alojamiento: ";
+                    getline(cin, costoMaximoStr);
+                    try {
+                        costoMaximo = static_cast<unsigned int>(stoi(costoMaximoStr));
+                        filtroReservas(arregloAnfitriones, anfitrionesCargados, municipio, fechaEntrada, estadiaNoches, costoMaximo, 0, true, false);
+                    } catch(invalid_argument& excepcion){
+                        cerr <<"Valor invalido: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(out_of_range& excepcion){
+                        cerr <<"Error en el valor numerico de la fecha (fuera de rango): " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(runtime_error& excepcion){
+                        cerr <<"Error al procesar el valor: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    }
+                }
+
+                while(true){
+                    cout << "Ingrese el codigo del alojamiento donde desea hospedarse: ";
+                    getline(cin, codigoAlojamiento);
+                    codigoValido = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, anfitrionesCargados, indiceAnfitrion, indiceAlojamiento);
+
+                    if(codigoValido){
+                        codigoReserva = to_string((stoi(arregloReservasGlobales[reservasCargadas-1] ->getCodigoReserva())) + 1);
+                        cout << "Ingrese el metodo de pago: ";
+                        getline(cin, metodoPago);
+                        montoPago = (arregloAnfitriones[indiceAnfitrion] -> getAlojamiento(indiceAlojamiento) ->getPrecioNoche()) * estadiaNoches;
+
+                        while(true){
+                            cout << "Desea dejar alguna inquietud en su reserva? (S/N): ";
+                            getline(cin, respuesta);
+                            if(respuesta == "S"){
+                                getline(cin, inquietudes);
+                                break;
+                            } else if(respuesta == "N"){
+                                break;
+                            } else {
+                                cout << "Opcion invalida. Intente de nuevo" << endl;
+                            }
+                        }
+
+                        Reserva* nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago.sumarDias(1), estadiaNoches, montoPago, huespedActual, arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento));
+                        arregloReservasGlobales[reservasCargadas] = nuevaReserva;
+                        huespedActual ->agregarReserva(nuevaReserva);
+                        arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento) ->agregarReserva(nuevaReserva);
+
+                        cout << "COMPROBANTE DE CONFIRMACION DE RESERVA";
+                        cout << nuevaReserva ->getCodigoReserva() << endl;
+                        cout << huespedActual ->getNombre() << endl;
+                        cout << nuevaReserva ->getAlojamiento() ->getCodigo() << endl;
+                        cout << "Fecha de inicio: ";
+                        nuevaReserva ->getFechaEntrada().fechaPalabras();
+                        cout << "\nFecha de finalizacion: ";
+                        nuevaReserva ->getFechaFin().fechaPalabras();
+                        reservasCargadas++;
+                        break;
+                    }
+                }
+            }
+
+            else if(opcionBusqueda == "2"){
+                string puntuaMinimaStr = "";
+                unsigned int puntuaMinima= 0;
+                while(true){
+                    cout << "Ingrese la puntuacion minima del Anfitrion: ";
+                    getline(cin, puntuaMinimaStr);
+                    try {
+                        puntuaMinima = stof(puntuaMinimaStr);
+                        filtroReservas(arregloAnfitriones, anfitrionesCargados, municipio, fechaEntrada, estadiaNoches, 0, puntuaMinima, true, false);
+                    } catch(invalid_argument& excepcion){
+                        cerr <<"Valor invalido: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(out_of_range& excepcion){
+                        cerr <<"Error en el valor numerico de la fecha (fuera de rango): " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(runtime_error& excepcion){
+                        cerr <<"Error al procesar el valor: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    }
+                }
+
+                while(true){
+                    cout << "Ingrese el codigo del alojamiento donde desea hospedarse: ";
+                    getline(cin, codigoAlojamiento);
+                    codigoValido = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, anfitrionesCargados, indiceAnfitrion, indiceAlojamiento);
+
+                    if(codigoValido){
+                        codigoReserva = to_string((stoi(arregloReservasGlobales[reservasCargadas-1] ->getCodigoReserva())) + 1);
+                        cout << "Ingrese el metodo de pago: ";
+                        getline(cin, metodoPago);
+                        montoPago = (arregloAnfitriones[indiceAnfitrion] -> getAlojamiento(indiceAlojamiento) ->getPrecioNoche()) * estadiaNoches;
+
+                        while(true){
+                            cout << "Desea dejar alguna inquietud en su reserva? (S/N): ";
+                            getline(cin, respuesta);
+                            if(respuesta == "S"){
+                                getline(cin, inquietudes);
+                                break;
+                            } else if(respuesta == "N"){
+                                break;
+                            } else {
+                                cout << "Opcion invalida. Intente de nuevo" << endl;
+                            }
+                        }
+
+                        Reserva* nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago.sumarDias(1), estadiaNoches, montoPago, huespedActual, arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento));
+                        arregloReservasGlobales[reservasCargadas] = nuevaReserva;
+                        huespedActual ->agregarReserva(nuevaReserva);
+                        arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento) ->agregarReserva(nuevaReserva);
+
+                        cout << "COMPROBANTE DE CONFIRMACION DE RESERVA";
+                        cout << nuevaReserva ->getCodigoReserva() << endl;
+                        cout << huespedActual ->getNombre() << endl;
+                        cout << nuevaReserva ->getAlojamiento() ->getCodigo() << endl;
+                        cout << "Fecha de inicio: ";
+                        nuevaReserva ->getFechaEntrada().fechaPalabras();
+                        cout << "\nFecha de finalizacion: ";
+                        nuevaReserva ->getFechaFin().fechaPalabras();
+                        reservasCargadas++;
+                        break;
+                    }
+                }
+            }
+
+            else if(opcionBusqueda == "3"){
+                string costoMaximoStr = "";
+                unsigned int costoMaximo= 0;
+                while(true){
+                    cout << "Ingrese el precio maximo por alojamiento: ";
+                    getline(cin, costoMaximoStr);
+                    try {
+                        costoMaximo = static_cast<unsigned int>(stoi(costoMaximoStr));
+                    } catch(invalid_argument& excepcion){
+                        cerr <<"Valor invalido: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(out_of_range& excepcion){
+                        cerr <<"Error en el valor numerico de la fecha (fuera de rango): " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(runtime_error& excepcion){
+                        cerr <<"Error al procesar el valor: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    }
+                }
+
+                string puntuaMinimaStr = "";
+                unsigned int puntuaMinima= 0;
+                while(true){
+                    cout << "Ingrese la puntuacion minima del Anfitrion: ";
+                    getline(cin, puntuaMinimaStr);
+                    try {
+                        puntuaMinima = stof(puntuaMinimaStr);
+                    } catch(invalid_argument& excepcion){
+                        cerr <<"Valor invalido: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(out_of_range& excepcion){
+                        cerr <<"Error en el valor numerico de la fecha (fuera de rango): " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    } catch(runtime_error& excepcion){
+                        cerr <<"Error al procesar el valor: " << excepcion.what() << " .Por favor, intente de nuevo" << endl;
+                    }
+                }
+
+                while(true){
+                    cout << "Ingrese el codigo del alojamiento donde desea hospedarse: ";
+                    getline(cin, codigoAlojamiento);
+                    codigoValido = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, anfitrionesCargados, indiceAnfitrion, indiceAlojamiento);
+
+                    if(codigoValido){
+                        codigoReserva = to_string((stoi(arregloReservasGlobales[reservasCargadas-1] ->getCodigoReserva())) + 1);
+                        cout << "Ingrese el metodo de pago: ";
+                        getline(cin, metodoPago);
+                        montoPago = (arregloAnfitriones[indiceAnfitrion] -> getAlojamiento(indiceAlojamiento) ->getPrecioNoche()) * estadiaNoches;
+
+                        while(true){
+                            cout << "Desea dejar alguna inquietud en su reserva? (S/N): ";
+                            getline(cin, respuesta);
+                            if(respuesta == "S"){
+                                getline(cin, inquietudes);
+                                break;
+                            } else if(respuesta == "N"){
+                                break;
+                            } else {
+                                cout << "Opcion invalida. Intente de nuevo" << endl;
+                            }
+                        }
+
+                        Reserva* nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago.sumarDias(1), estadiaNoches, montoPago, huespedActual, arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento));
+                        arregloReservasGlobales[reservasCargadas] = nuevaReserva;
+                        huespedActual ->agregarReserva(nuevaReserva);
+                        arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento) ->agregarReserva(nuevaReserva);
+
+                        cout << "COMPROBANTE DE CONFIRMACION DE RESERVA";
+                        cout << nuevaReserva ->getCodigoReserva() << endl;
+                        cout << huespedActual ->getNombre() << endl;
+                        cout << nuevaReserva ->getAlojamiento() ->getCodigo() << endl;
+                        cout << "Fecha de inicio: ";
+                        nuevaReserva ->getFechaEntrada().fechaPalabras();
+                        cout << "\nFecha de finalizacion: ";
+                        nuevaReserva ->getFechaFin().fechaPalabras();
+                        reservasCargadas++;
+                        break;
+                    }
+                }
+            }
+
+            else {
+                filtroReservas(arregloAnfitriones, anfitrionesCargados, municipio, fechaEntrada, estadiaNoches, 0, 0, false, false);
+
+                while(true){
+                    cout << "Ingrese el codigo del alojamiento donde desea hospedarse: ";
+                    getline(cin, codigoAlojamiento);
+                    codigoValido = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, anfitrionesCargados, indiceAnfitrion, indiceAlojamiento);
+
+                    if(codigoValido){
+                        codigoReserva = to_string((stoi(arregloReservasGlobales[reservasCargadas-1] ->getCodigoReserva())) + 1);
+                        cout << "Ingrese el metodo de pago: ";
+                        getline(cin, metodoPago);
+                        montoPago = (arregloAnfitriones[indiceAnfitrion] -> getAlojamiento(indiceAlojamiento) ->getPrecioNoche()) * estadiaNoches;
+
+                        while(true){
+                            cout << "Desea dejar alguna inquietud en su reserva? (S/N): ";
+                            getline(cin, respuesta);
+                            if(respuesta == "S"){
+                                getline(cin, inquietudes);
+                                break;
+                            } else if(respuesta == "N"){
+                                break;
+                            } else {
+                                cout << "Opcion invalida. Intente de nuevo" << endl;
+                            }
+                        }
+
+                        Reserva* nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago = fechaEntrada.sumarDias(1), estadiaNoches, montoPago, huespedActual, arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento));
+                        arregloReservasGlobales[reservasCargadas] = nuevaReserva;
+                        huespedActual ->agregarReserva(nuevaReserva);
+                        arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento) ->agregarReserva(nuevaReserva);
+
+                        cout << "COMPROBANTE DE CONFIRMACION DE RESERVA";
+                        cout << nuevaReserva ->getCodigoReserva() << endl;
+                        cout << huespedActual ->getNombre() << endl;
+                        cout << nuevaReserva ->getAlojamiento() ->getCodigo() << endl;
+                        cout << "Fecha de inicio: ";
+                        nuevaReserva ->getFechaEntrada().fechaPalabras();
+                        cout << "\nFecha de finalizacion: ";
+                        nuevaReserva ->getFechaFin().fechaPalabras();
+                        reservasCargadas++;
+                        break;
+                    }
+                }
+            }
+
+            guardarReservasEnArchivo(arregloAnfitriones, anfitrionesCargados);
         }
 
         else if(opcion == "2"){
@@ -115,7 +373,7 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
             bool reservaEliminada = false;
 
             //visualizar las reservas asociadas al huesped
-            arregloHuespedes[indice] -> mostrarReservas();
+            huespedActual -> mostrarReservas();
 
             while(!reservaEliminada){
                 cout << "\nIngrese el codigo de la reserva que desea eliminar: ";
@@ -128,6 +386,7 @@ void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales
                     cout << "Reserva aliminada exitosamente." << endl;
                 }
             }
+            guardarReservasEnArchivo(arregloAnfitriones, anfitrionesCargados);
         }
         else if(opcion == "3"){
             cout << "Has salido del sistema";

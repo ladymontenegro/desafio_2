@@ -14,7 +14,8 @@ SOURCES += \
     anfitrion.cpp\
     fecha.cpp\
     huesped.cpp\
-    reserva.cpp
+    reserva.cpp \
+    variablesIteracionesMemoria.cpp
 
 HEADERS += \
     alojamiento.h\
@@ -22,5 +23,6 @@ HEADERS += \
     fecha.h\
     funcionesAuxiliares.h \
     huesped.h\
-    reserva.h
+    reserva.h \
+    variablesIteracionesMemoria.h
 

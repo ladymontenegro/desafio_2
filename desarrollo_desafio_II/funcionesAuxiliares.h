@@ -5,17 +5,18 @@
 #include "anfitrion.h"
 #include "fecha.h"
 #include "huesped.h"
+#include "reserva.h"
 
 //FUNCIONES DE MENUS
-void menuAnfitrion(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
-void menuHuesped(Huesped **&arregloHuespedes, Reserva **&arregloReservasGlobales, unsigned short indice, unsigned short reservasCargadas);
-void opcion1(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
-void opcion2(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion);
+void menuAnfitrion(Anfitrion *anfitrionActual, Anfitrion **arregloAnfitriones, Reserva **arregloReservasGlobales, unsigned short &totalReservasGlobales, unsigned short anfitrionesCargados);
+void menuHuesped(Anfitrion **&arregloAnfitriones,Reserva **&arregloReservasGlobales, Huesped* huespedActual, unsigned short &reservasCargadas, unsigned short anfitrionesCargados);
+void opcion1(Anfitrion *anfitrionActual, Anfitrion **arregloAnfitriones, Reserva **arregloReservasGlobales, unsigned short &totalReservasGlobales, unsigned short anfitrionesCargados);
+void opcion2(Anfitrion *anfitrionActual);
 
 //FUNCIONES AUXILIARES
 string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool esCampoObligatorio = true);
 Fecha crearFecha(const string &fechaStr);
-bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas);
+bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short &reservasCargadas);
 template<typename T>
 void redimensionarArreglo(unsigned short& capacidad, unsigned short elementosCargados, T**& arreglo);
 
@@ -40,8 +41,8 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
 int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes);
 
 //FUNCIONES DE CARGA DE ARCHIVOS
-void guardarReservasEnArchivo(Anfitrion** anfitriones, unsigned short anfitrionesCargados);
-void moverReservasHistoricas(Fecha fechaActual, Reserva** reservasGlobales, unsigned short &totalReservasGlobales, Anfitrion** anfitriones, unsigned short anfitrionesCargados, Huesped** huespedes, unsigned short totalHuespedes);
+void guardarReservasEnArchivo(Anfitrion** arregloAnfitriones, unsigned short anfitrionesCargados);
+void moverReservasHistoricas(Fecha fechaActual, Reserva** reservasGlobales, unsigned short &reservasCargadas);
 
 //Implementacion de la plantilla
 template<typename T>

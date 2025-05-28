@@ -13,6 +13,7 @@ private:
 
 public:
     Fecha(unsigned char _dia, unsigned char _mes, unsigned short _anio);
+    Fecha();
 
     // Metodos get
     unsigned char getDia() const;

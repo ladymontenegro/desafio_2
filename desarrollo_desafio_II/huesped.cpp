@@ -1,4 +1,5 @@
 #include "huesped.h"
+#include "variablesIteracionesMemoria.h"
 #include <iostream>
 
 Huesped::Huesped(const string &_nombre,

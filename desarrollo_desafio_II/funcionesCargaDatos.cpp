@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept> //pa las excepciones estandar
 
+#include "variablesIteracionesMemoria.h"
 #include "funcionesAuxiliares.h"
 
 using namespace std;

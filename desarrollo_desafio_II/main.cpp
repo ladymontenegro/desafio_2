@@ -1,5 +1,6 @@
 #include <iostream>
 #include "funcionesAuxiliares.h"
+#include "variablesIteracionesMemoria.h"
 using namespace std;
 
 int main()
@@ -18,21 +19,23 @@ int main()
 
     cout << "Carga" << endl;
 
-    short anfitrionesCargados = cargarDatosAnfitriones(rutaAnfitriones, arregloAnfitriones);
-    short huespedesCargados = cargarDatosHuespedes(rutaHuespedes, arregloHuespedes);
-    short reservasCargadas = cargarDatosReservas(rutaReservas, arregloReservasGlobales, arregloAnfitriones, arregloHuespedes, anfitrionesCargados, huespedesCargados);
+    unsigned short anfitrionesCargados = cargarDatosAnfitriones(rutaAnfitriones, arregloAnfitriones);
+    unsigned short huespedesCargados = cargarDatosHuespedes(rutaHuespedes, arregloHuespedes);
+    unsigned short reservasCargadas = cargarDatosReservas(rutaReservas, arregloReservasGlobales, arregloAnfitriones, arregloHuespedes, anfitrionesCargados, huespedesCargados);
 
     cout << "Todo cargo " << reservasCargadas << endl;
 
     unsigned short indiceUsuario = 0;
     while(true){
-        char esAnfitrion = tipoUsuario(arregloHuespedes, arregloAnfitriones, indiceUsuario, anfitrionesCargados, huespedesCargados);
+        char esUsuario = tipoUsuario(arregloHuespedes, arregloAnfitriones, indiceUsuario, anfitrionesCargados, huespedesCargados);
 
-        if(esAnfitrion == '1'){
-            menuAnfitrion(arregloAnfitriones, indiceUsuario);
+        if(esUsuario == '1'){
+            Anfitrion* anfitrionActual = arregloAnfitriones[indiceUsuario];
+            menuAnfitrion(anfitrionActual, arregloAnfitriones,arregloReservasGlobales, reservasCargadas, anfitrionesCargados);
             break;
-        } else if(esAnfitrion == '2'){
-            menuHuesped(arregloHuespedes, arregloReservasGlobales, indiceUsuario, reservasCargadas);
+        } else if(esUsuario == '2'){
+            Huesped* huespedActual = arregloHuespedes[indiceUsuario];
+            menuHuesped(arregloAnfitriones, arregloReservasGlobales, huespedActual, reservasCargadas, anfitrionesCargados);
             break;
         } else {
             cout << "Usuario no encontrado. Intente de nuevo" << endl;

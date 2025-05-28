@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 
+#include "variablesIteracionesMemoria.h"
 #include "alojamiento.h"
 #include "anfitrion.h"
 #include "fecha.h"
@@ -30,7 +31,7 @@ string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool e
     return atributo;
 }
 
-bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short reservasCargadas) {
+bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short &reservasCargadas) {
     for (int i = 0; i < reservasCargadas; ++i) {
         if ((arregloReservasGlobal[i] != nullptr) && (arregloReservasGlobal[i] -> getCodigoReserva() == codigoReserva)) {
             //eliminar la reserva del huesped
@@ -49,6 +50,7 @@ bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReserva
                 arregloReservasGlobal[j] = arregloReservasGlobal[j + 1];
             }
             arregloReservasGlobal[reservasCargadas - 1] = nullptr;
+            reservasCargadas--;
 
             return true;
         }
@@ -295,6 +297,7 @@ void ordenarReservasDeAlojamiento(Alojamiento* alojamiento) {
     //se ordenan las reservas
     mergeSort(reservas, 0, reservasCargadas - 1);
 }
+
 
 
 

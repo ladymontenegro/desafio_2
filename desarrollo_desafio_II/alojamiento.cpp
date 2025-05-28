@@ -1,4 +1,5 @@
 #include "alojamiento.h"
+#include "variablesIteracionesMemoria.h"
 #include <iostream>
 
 //Constructor de la clase
@@ -176,21 +177,20 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
     return true; // No hay traslape con ninguna reserva
 }
 
-bool Alojamiento::eliminarReserva(string _codigoReserva)
+void Alojamiento::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
 
         if (reservas[i] != nullptr) {
             if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
-                reservasCargadas--;
                 if (i != reservasCargadas - 1) {
                     for (unsigned short j = i; j < reservasCargadas - 1; j++) {
                         reservas[j] = reservas[j + 1];
                     }
                     reservas[reservasCargadas - 1] = nullptr;
                 }
-                return true;
+                reservasCargadas--;
             }
         }
     }

@@ -1,4 +1,5 @@
 #include "anfitrion.h"
+#include "variablesIteracionesMemoria.h"
 #include <iostream>
 
 //Constructor de la clase

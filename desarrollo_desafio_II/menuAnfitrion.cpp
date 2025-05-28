@@ -4,13 +4,11 @@
 #include "reserva.h"
 #include <iostream>
 #include <string>
+#include "variablesIteracionesMemoria.h"
 #include "funcionesAuxiliares.h"
 using namespace std;
 
-void menuAnfitrion(Anfitrion **arregloAnfitriones,
-                   unsigned short indiceAnfitrion,
-                   Reserva **arregloReservasGlobales,
-                   unsigned short &totalReservasGlobales)
+void menuAnfitrion(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva **arregloReservasGlobales, unsigned short &totalReservasGlobales, unsigned short anfitrionesCargados)
 {
     while (true) {
         cout << "---MENU ANFITRIONES---" << endl;
@@ -19,19 +17,20 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones,
         cout << "3. Salir" << endl;
         cout << "Escoja una opcion: ";
         string opcion;
+        Fecha fechaCorte;
         cin >> opcion;
         cout << endl;
         if (opcion != "1" && opcion != "2" && opcion != "3") {
             cout << "Opcion invalida. Ingrese un numero del 1 al 3 " << endl;
         } else {
             if (opcion == "3") {
-                string fechaCorte = "";
+                string fechaCorteStr = "";
                 while (true) {
                     cout << "Para salir por favor ingrese la fecha del dia de hoy (DD-MM-AAAA): ";
                     cin.ignore(1000, '\n');
-                    getline(cin, fechaCorte);
+                    getline(cin, fechaCorteStr);
                     try {
-                        Fecha fechaCorte = crearFecha(fechaCorte);
+                        fechaCorte = crearFecha(fechaCorteStr);
                         break;
                     } catch (const invalid_argument &excepcion) {
                         cerr << "Fecha invalida. Intente de nuevo por favor" << excepcion.what() << endl;
@@ -42,11 +41,12 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones,
                     }
                 }
                 moverReservasHistoricas(fechaCorte, arregloReservasGlobales, totalReservasGlobales);
+                guardarReservasEnArchivo(arregloAnfitriones, anfitrionesCargados);
                 cout << "Saliendo del menu de anfitriones" << endl;
                 break;
             } else if (opcion == "1") {
                 while (true) {
-                    opcion1(arregloAnfitriones, indiceAnfitrion);
+                    opcion1(anfitrionActual, arregloAnfitriones, arregloReservasGlobales, totalReservasGlobales, anfitrionesCargados);
                     cout << "Desea anular otra reserva? (y/n): ";
                     string continuarAnulando;
                     while (true) {
@@ -64,17 +64,15 @@ void menuAnfitrion(Anfitrion **arregloAnfitriones,
                 }
             } else if (opcion == "2") {
                 cout << "Sus alojamientos son:" << endl;
-                opcion2(arregloAnfitriones, indiceAnfitrion);
+                opcion2(anfitrionActual);
                 cout << endl << endl;
             }
         }
     }
 }
 
-void opcion1(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
+void opcion1(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva **arregloReservasGlobales, unsigned short &totalReservasGlobales, unsigned short anfitrionesCargados)
 {
-    Anfitrion *anfitrionActual = arregloAnfitriones[indiceAnfitrion];
-
     // Mostrar todos los alojamientos del anfitrion
     cout << "\n--- Alojamientos del anfitrion ---" << endl;
     if (anfitrionActual->getAlojamientosCargados() == 0) {
@@ -121,27 +119,26 @@ void opcion1(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
         }
     }
 
-    // Pedir codigo de reserva a anular y buscarla/eliminarla
-    cout << "\nEscriba por favor el codigo de la reserva que desea anular: ";
     string codigoReservaAnular;
-    cin >> codigoReservaAnular;
+    bool eliminada = false;
 
-    // Aqui se llama al metodo eliminarReserva en el alojamiento especifico
-    bool eliminada = alojamientoEncontrado->eliminarReserva(codigoReservaAnular);
-
-    if (eliminada) {
-        cout << "Reserva eliminada exitosamente." << endl;
-    } else {
-        cout << "No se encontro la reserva con el codigo '" << codigoReservaAnular
-             << "' en este alojamiento." << endl;
-    }
     cout << endl;
+    while(!eliminada){
+        cout << "\nEscriba por favor el codigo de la reserva que desea anular: ";
+        cin >> codigoReservaAnular;
+        eliminada = eliminarReservaTodos(codigoReservaAnular, arregloReservasGlobales, totalReservasGlobales);
+
+        if(!eliminada){
+            cout << "Error: No fue posible eliminar la reserva. Asegurese que el codigo ingresado fue el correcto" << endl;
+        } else {
+            cout << "Reserva aliminada exitosamente." << endl;
+            guardarReservasEnArchivo(arregloAnfitriones, anfitrionesCargados);
+        }
+    }
 }
 
-void opcion2(Anfitrion **arregloAnfitriones, unsigned short indiceAnfitrion)
+void opcion2(Anfitrion* anfitrionActual)
 {
-    Anfitrion *anfitrionActual = arregloAnfitriones[indiceAnfitrion];
-
     cout << "\n--- Consulta de Reservas por Alojamiento ---" << endl;
     if (anfitrionActual->getAlojamientosCargados() == 0) {
         cout << "El anfitrion no tiene alojamientos registrados para consultar." << endl;
