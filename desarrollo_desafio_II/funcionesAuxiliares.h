@@ -33,7 +33,7 @@ char tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, 
 
 //FUNCIONES DE BUSQUEDA
 short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes, bool &encontrado);
-bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento);
+bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, unsigned short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento);
 bool filtroReservas(Anfitrion **&arregloAnfitriones, const unsigned short &anfitrionesCargados, const string &municipio, const Fecha &fecha, const unsigned short &cantidadDeNoches,
                     const unsigned int &costoMaximo = 0, const float &puntajeMinimo = 0, bool buscarPorCosto = false, bool buscarPorPuntaje = false);
 

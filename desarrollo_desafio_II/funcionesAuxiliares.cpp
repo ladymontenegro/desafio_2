@@ -36,7 +36,7 @@ string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool e
 }
 
 bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short &reservasCargadas) {
-    for (int i = 0; i < reservasCargadas; ++i) {
+    for (unsigned short i = 0; i < reservasCargadas; ++i) {
         Globales::contadorIteraciones++;
         if ((arregloReservasGlobal[i] != nullptr) && (arregloReservasGlobal[i] -> getCodigoReserva() == codigoReserva)) {
             //eliminar la reserva del huesped
@@ -123,7 +123,7 @@ size_t calcularMemoriaTotal(unsigned short anfitrionesCargados, unsigned short h
     total += static_cast<size_t>(capacidadAnfitriones) * sizeof(Anfitrion*);
 
     //memoria de cada anfitrion cargado (no nulo)
-    for (int i = 0; i < anfitrionesCargados; ++i) {
+    for (unsigned short i = 0; i < anfitrionesCargados; ++i) {
         if (arregloAnfitriones[i]) {
             total += arregloAnfitriones[i]->calcularMemoria();
         }
@@ -133,7 +133,7 @@ size_t calcularMemoriaTotal(unsigned short anfitrionesCargados, unsigned short h
     total += static_cast<size_t>(capacidadHuespedes) * sizeof(Huesped*);
 
     //memoria de cada huesped cargado (no nulo)
-    for (int i = 0; i < huespedesCargados; ++i) {
+    for (unsigned short i = 0; i < huespedesCargados; ++i) {
         if (arregloHuespedes[i]) {
             total += arregloHuespedes[i]->calcularMemoria();
         }
@@ -143,7 +143,7 @@ size_t calcularMemoriaTotal(unsigned short anfitrionesCargados, unsigned short h
     total += static_cast<size_t>(capacidadReservasGlobales) * sizeof(Anfitrion*);
 
     //memoria de cada reserva cargado (no nulo)
-    for (int i = 0; i < reservasCargadas; ++i) {
+    for (unsigned short i = 0; i < reservasCargadas; ++i) {
         if (arregloReservasGlobales[i]) {
             total += arregloReservasGlobales[i]->calcularMemoria();
         }
@@ -154,7 +154,7 @@ size_t calcularMemoriaTotal(unsigned short anfitrionesCargados, unsigned short h
 
 //FUNCIONES DE BUSQUEDA
 short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes, bool &encontrado){
-    for(short i = 0; i < cantidadHuespedes; i++){
+    for(unsigned short i = 0; i < cantidadHuespedes; i++){
         Globales::contadorIteraciones++;
         if((arregloHuespedes[i] -> getDocumento()) == documento){
             encontrado = true;
@@ -164,10 +164,10 @@ short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &docum
     return -1;
 }
 
-bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
-    for(short i = 0; i < cantidadAnfitriones; i++){
+bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, unsigned short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
+    for(unsigned short i = 0; i < cantidadAnfitriones; i++){
         Globales::contadorIteraciones++;
-        for(short j = 0; j < (arregloAnfitriones[i] -> getAlojamientosCargados()); j++){
+        for(unsigned short j = 0; j < (arregloAnfitriones[i] -> getAlojamientosCargados()); j++){
             Globales::contadorIteraciones++;
             if((arregloAnfitriones[i] -> getAlojamiento(j) -> getCodigo()) == codigo){
                 indiceAnfitrion = i;
