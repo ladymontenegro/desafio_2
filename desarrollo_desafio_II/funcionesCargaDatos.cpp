@@ -9,7 +9,7 @@
 using namespace std;
 
 //FUNCIONES PARA CARGA DE DATOS EN ESTRUCTURAS Y CLASES
-short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfitriones) {
+short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfitriones, unsigned short capacidadAnfitriones) {
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()){
         cerr << "Error: No se pudo abrir el archivo '" << rutaArchivo << "'" << endl;
@@ -19,19 +19,16 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
     char delimitador = ',';
     unsigned short anfitrionesCargados = 0;
     unsigned short alojamientosCargados = 0;
-    unsigned short capacidadAnfitriones = 40;
     bool anfitrionActivo = false;
     string linea;
 
     if (arregloAnfitriones == nullptr) {
-        arregloAnfitriones = new Anfitrion*[capacidadAnfitriones];
-        for (int i = 0; i < capacidadAnfitriones; ++i) {
-            arregloAnfitriones[i] = nullptr;
-        }
+        arregloAnfitriones = new Anfitrion*[capacidadAnfitriones]();
     }
 
     try {
         while (getline(archivo, linea)) {
+            Globales::contadorIteraciones++;
             size_t inicio = 0;
             Anfitrion* nuevoAnfitrion = nullptr;
             Alojamiento* nuevoAlojamiento = nullptr;
@@ -45,6 +42,7 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
                     try {
                         string puntuacion_str = obtenerDato(linea, inicio, delimitador);
                         puntuacion = stof(puntuacion_str);
+                        Globales::contadorStof++;
                         if ((puntuacion < 0.0f) || (puntuacion > 5.0f)){
                             throw out_of_range("La puntuacion debe estar entre 0 y 5");
                         }
@@ -55,6 +53,7 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
                     unsigned short antiguedad;
                     try {
                         antiguedad = static_cast<unsigned short>(stoi(obtenerDato(linea,inicio,delimitador)));
+                        Globales::contadorStoi++;
                     } catch(const exception& e) {
                         throw runtime_error("Error en antigüedad: " + string(e.what()));
                     }
@@ -84,6 +83,7 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
                     unsigned int precioNoche;
                     try {
                         precioNoche = static_cast<unsigned int>(stoi(obtenerDato(linea,inicio,delimitador)));
+                        Globales::contadorStoi++;
                     } catch(const exception& e) {
                         throw runtime_error("Error en precio: " + string(e.what()));
                     }
@@ -132,7 +132,7 @@ short cargarDatosAnfitriones(const string& rutaArchivo, Anfitrion**& arregloAnfi
     return anfitrionesCargados;
 }
 
-int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes){
+int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes, unsigned short capacidadHuespedes){
     ifstream archivo(rutaArchivo);
     if(!archivo.is_open()){
         cerr << "Error: No se pudo abrir el archivo '" << rutaArchivo << "'" << endl;
@@ -141,23 +141,21 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
 
     string linea = "";
     char delimitador = ',';
-    unsigned short capacidadHuespedes = 70;
 
     if (arregloHuespedes == nullptr) {
-        arregloHuespedes = new Huesped*[capacidadHuespedes];
-        for(short i = 0; i < capacidadHuespedes; i++){
-            arregloHuespedes[i] = nullptr;
-        }
+        arregloHuespedes = new Huesped*[capacidadHuespedes]();
     }
 
     short huespedesCargados = 0;
 
     try {
         while(getline(archivo, linea)) {
+            Globales::contadorIteraciones++;
             size_t inicio = 0;
             Huesped* nuevoHuesped = nullptr;
 
             try {
+                Globales::contadorEmpty++;
                 if(linea.empty()) continue;  //pa saltar lineas vacias en lugar de romper el ciclo
 
                 string documento = obtenerDato(linea, inicio, delimitador);
@@ -167,6 +165,7 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
                 try {
                     string puntuacion_str = obtenerDato(linea, inicio, delimitador);
                     puntuacion = stof(puntuacion_str);
+                    Globales::contadorStof++;
                     if ((puntuacion < 0.0f) || (puntuacion > 5.0f)){
                         throw out_of_range("La puntuacion debe estar entre 0 y 5");
                     }
@@ -179,6 +178,7 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
                 try {
                     string antiguedad_str = obtenerDato(linea, inicio, delimitador);
                     antiguedad = static_cast<unsigned short>(stoi(antiguedad_str));
+                    Globales::contadorStoi++;
                 } catch(const exception& e) {
                     throw runtime_error("Antigüedad invalida: " + string(e.what()));
                 }
@@ -215,7 +215,7 @@ int cargarDatosHuespedes(const string& rutaArchivo, Huesped**& arregloHuespedes)
     return huespedesCargados;
 }
 
-int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes) {
+int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitrion**& arregloAnfitriones, Huesped**& arregloHuespedes, short cantidadAnfitriones, short cantidadHuespedes, unsigned short capacidadReservasGlobales) {
 
     ifstream archivo(rutaArchivo);
     if (!archivo.is_open()) {
@@ -223,7 +223,6 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
         return -1;
     }
 
-    unsigned short capacidadReservasGlobales = 150;
     char delimitador = ',';
     string linea = "";
     string codigoAlojamiento;
@@ -234,18 +233,18 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
     bool alojamientoActivo = false;
 
     if (arregloReservas == nullptr) {
-        arregloReservas = new Reserva*[capacidadReservasGlobales];
-        for (short i = 0; i < capacidadReservasGlobales; ++i) {
-            arregloReservas[i] = nullptr;
-        }
+        arregloReservas = new Reserva*[capacidadReservasGlobales]();
     }
 
     try { //este try de aca es pa manejar los errores que puede haber antes del try interno del while
         while (getline(archivo, linea)) {
+            Globales::contadorIteraciones++;
             size_t inicio = 0;
 
             if (linea.empty()) continue;
+            Globales::contadorEmpty++;
 
+            Globales::contadorLength++;
             if (linea.length() == 4) {
                 codigoAlojamiento = linea;
                 bool codigoEncontrado = buscarAlojamientoPorCodigo(arregloAnfitriones, codigoAlojamiento, cantidadAnfitriones, indiceAnfitrion, indiceAlojamiento);
@@ -271,6 +270,7 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                     try {
                         string estadiaNoches_str = obtenerDato(linea, inicio, delimitador);
                         estadiaNoches = static_cast<unsigned short>(stoi(estadiaNoches_str));
+                        Globales::contadorStoi++;
                     } catch(const exception& e) {
                         throw runtime_error("Estadia de noche invalida: " + string(e.what()));
                     }
@@ -283,6 +283,7 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                     try {
                         string montoPago_str = obtenerDato(linea, inicio, delimitador);
                         montoPago = static_cast<unsigned int>(stoi(montoPago_str));
+                        Globales::contadorStoi++;
                     } catch(const exception& e) {
                         throw runtime_error("Monto de pago invalida: " + string(e.what()));
                     }
@@ -294,13 +295,15 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
                         throw out_of_range("indice de anfitrion invalido.");
                     }
 
-                    indiceHuesped = buscarHuespedPorDocumento(arregloHuespedes, documentoHuesped, cantidadHuespedes);
+                    bool encontrado = false;
+                    indiceHuesped = buscarHuespedPorDocumento(arregloHuespedes, documentoHuesped, cantidadHuespedes, encontrado);
                     if (indiceHuesped == -1) {
                         throw invalid_argument("Huesped no registrado: " + documentoHuesped);
                     }
 
                     Anfitrion* anfitrion = arregloAnfitriones[indiceAnfitrion];
                     if (anfitrion == nullptr) {
+                        Globales::contadorTo_String++;
                         throw logic_error("Anfitrion no inicializado en el indice: " + to_string(indiceAnfitrion));
                     }
 
@@ -334,6 +337,7 @@ int cargarDatosReservas(string& rutaArchivo, Reserva**& arregloReservas, Anfitri
         cerr << "Error critico al cargar las reservas: " << e.what() << endl;
         archivo.close();
         for (short i = 0; i < reservasCargadas; ++i) {
+            Globales::contadorIteraciones++;
             delete arregloReservas[i];
         }
         delete[] arregloReservas;

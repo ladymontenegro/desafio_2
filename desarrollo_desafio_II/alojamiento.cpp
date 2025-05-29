@@ -24,11 +24,7 @@ Alojamiento::Alojamiento(const string &_nombre,
     , capacidadReservas(100)
     , reservasCargadas(0)
 {
-    reservas = new Reserva *[capacidadReservas];
-    for (short i = 0; i < capacidadReservas; i++) {
-
-        reservas[i] = nullptr;
-    }
+    reservas = new Reserva *[capacidadReservas]();
 }
 
 // Costructor de copia
@@ -45,20 +41,15 @@ Alojamiento::Alojamiento(const Alojamiento &otro)
     , capacidadReservas(otro.capacidadReservas)
     , reservasCargadas(otro.reservasCargadas)
 {
-    reservas = new Reserva *[capacidadReservas];
+    reservas = new Reserva *[capacidadReservas]();
 
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
-
+        Globales::contadorIteraciones++;
         if (otro.reservas[i] != nullptr) {
             reservas[i] = new Reserva(*(otro.reservas[i]));
         } else {
             reservas[i] = nullptr;
         }
-    }
-
-    for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
-
-        reservas[i] = nullptr;
     }
 }
 
@@ -66,14 +57,23 @@ Alojamiento::Alojamiento(const Alojamiento &otro)
 Alojamiento::~Alojamiento()
 {
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
-
+        Globales::contadorIteraciones++;
         if (reservas[i] != nullptr) {
-            delete reservas[i]; //libera la memoria del objeto reserva
             reservas[i] = nullptr;
         }
     }
     delete[] reservas;
     reservas = nullptr;
+}
+
+size_t Alojamiento::calcularMemoria() const {
+    size_t total = sizeof(*this);
+
+    //solo suma el ARREGLO DE PUNTEROS
+    if (reservas) {
+        total += static_cast<size_t>(capacidadReservas) * sizeof(Reserva*);
+    }
+    return total;
 }
 
 // Metodos get
@@ -164,7 +164,7 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
     Fecha fechaSalida = fechaInicio.sumarDias(_cantidadDeNoches);
 
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-
+        Globales::contadorIteraciones++;
         if (reservas[i] != nullptr) {
             Fecha entradaExistente = reservas[i]->getFechaEntrada();
             Fecha salidaExistente = entradaExistente.sumarDias(reservas[i]->getEstadiaNoches());
@@ -180,7 +180,7 @@ bool Alojamiento::alojamientoDisponible(Fecha fechaInicio, unsigned int _cantida
 void Alojamiento::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-
+        Globales::contadorIteraciones++;
         if (reservas[i] != nullptr) {
             if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
@@ -209,12 +209,12 @@ void Alojamiento::agregarReserva(Reserva *nuevaReserva)
         Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
 
         for (int i = 0; i < reservasCargadas; i++) {
-
+            Globales::contadorIteraciones++;
             nuevoArreglo[i] = reservas[i];
         }
 
         for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
-
+            Globales::contadorIteraciones++;
             nuevoArreglo[i] = nullptr;
         }
         delete[] reservas;
@@ -228,7 +228,7 @@ void Alojamiento::agregarReserva(Reserva *nuevaReserva)
 
 void Alojamiento::mostrarAlojamiento()
 {
-    cout << "Nombre: " << nombre << endl;
+    cout << "\nNombre: " << nombre << endl;
     cout << "Codigo: " << codigo << endl;
     cout << "Tipo: " << tipo << endl;
     cout << "Precio por noche: " << precioNoche << endl;

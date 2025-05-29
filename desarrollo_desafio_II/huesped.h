@@ -26,6 +26,8 @@ public:
 
     ~Huesped();
 
+    size_t calcularMemoria() const;
+
     // Metodos get
 
     const string getNombre();

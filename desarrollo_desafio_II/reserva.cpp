@@ -30,6 +30,16 @@ Reserva::Reserva(const string &_codigoReserva,
     , alojamientoAsociado(_alojamientoAsociado)
 {}
 
+size_t Reserva::calcularMemoria() const {
+    size_t total = sizeof(*this); // Memoria estática
+
+    // Solo memoria de atributos dinámicos propios (si los tiene)
+    // Ej: si tiene un char* para descripción:
+    // if (descripcion) total += strlen(descripcion) + 1;
+
+    return total;
+}
+
 // Metodos get
 string Reserva::getCodigoReserva() const
 {
@@ -121,6 +131,7 @@ void Reserva::setMontoPago(unsigned int _montoPago)
 
 string Reserva::reservaString()
 {
+    Globales::contadorTo_String+=2;
     return fechaEntrada.fechaString() + "," + codigoReserva + "," + huespedAsociado->getDocumento()
            + "," + to_string(estadiaNoches) + "," + metodoPago + "," + fechaPago.fechaString() + "," + to_string(montoPago) + ","
            + inquietudes;

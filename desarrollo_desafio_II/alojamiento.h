@@ -36,6 +36,8 @@ public:
 
     ~Alojamiento();
 
+    size_t calcularMemoria() const;
+
     // Metodos get
     string getNombre() const;
     string getAmenidades() const;

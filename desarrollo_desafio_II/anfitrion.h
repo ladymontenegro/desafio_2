@@ -22,6 +22,8 @@ public:
 
     ~Anfitrion();
 
+    size_t calcularMemoria() const;
+
     // Metodos get
     const string getDocumento();
     float getPuntuacion() const;

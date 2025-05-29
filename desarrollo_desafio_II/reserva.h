@@ -32,6 +32,9 @@ public:
             Huesped *_huespedAsociado,
             Alojamiento *_alojamientoAsociado);
 
+
+    size_t calcularMemoria() const;
+
     // Metodos get
     string getCodigoReserva() const;
     string getMetodoPago() const;

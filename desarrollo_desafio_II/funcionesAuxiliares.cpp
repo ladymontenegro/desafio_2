@@ -14,14 +14,18 @@ using namespace std;
 string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool esCampoObligatorio = true){
 
     size_t fin = linea.find(delimitador, inicio);
+    Globales::contadorFind++;
     string atributo;
 
+    Globales::contadorSubstr++;
     if (fin != string::npos) { //si se encontro la coma
         atributo = linea.substr(inicio, fin - inicio);
         inicio = fin + 1; //actualiza el inicio para el proximo atributo, por eso se pasa por referencia
     } else { //para el ultimo atributo que no tiene delimitador
         atributo = linea.substr(inicio);
+        Globales::contadorSubstr++;
         inicio = linea.length(); //evita procesar mas atributos
+        Globales::contadorLength++;
     }
 
     if (esCampoObligatorio && atributo.empty()) {
@@ -33,6 +37,7 @@ string obtenerDato(const string& linea, size_t& inicio, char delimitador, bool e
 
 bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReservasGlobal, unsigned short &reservasCargadas) {
     for (int i = 0; i < reservasCargadas; ++i) {
+        Globales::contadorIteraciones++;
         if ((arregloReservasGlobal[i] != nullptr) && (arregloReservasGlobal[i] -> getCodigoReserva() == codigoReserva)) {
             //eliminar la reserva del huesped
             Huesped* huesped = arregloReservasGlobal[i] -> getHuesped();
@@ -47,6 +52,7 @@ bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReserva
             arregloReservasGlobal[i] = nullptr;
 
             for (unsigned short j = i; j < reservasCargadas - 1; j++) {
+                Globales::contadorIteraciones++;
                 arregloReservasGlobal[j] = arregloReservasGlobal[j + 1];
             }
             arregloReservasGlobal[reservasCargadas - 1] = nullptr;
@@ -58,86 +64,100 @@ bool eliminarReservaTodos(const string &codigoReserva, Reserva **&arregloReserva
     return false;
 }
 
-//FUNCIONES DE VALIDACION
-bool esDocumento(const string& linea, size_t& inicio){
-    bool documento = false;
-    char delimitador = ',';
-    size_t fin = linea.find(delimitador, inicio);
-    string identificador = linea.substr(inicio, fin - inicio);
+bool crearReservaTodos(Reserva** arregloReservasGlobales, unsigned short &reservasCargadas,Anfitrion** arregloAnfitriones,
+                    Fecha fechaEntrada, Huesped* huespedActual, unsigned short estadiaNoches, unsigned short indiceAlojamiento, unsigned short indiceAnfitrion){
 
-    if((identificador.length()) == 10){
-        documento = true;
-    }
+    string metodoPago = "";
+    string inquietudes = "";
+    string codigoReserva = "";
+    unsigned int montoPago = 0;
+    Fecha fechaPago;
 
-    return documento;
-}
+    codigoReserva = to_string((stoi(arregloReservasGlobales[reservasCargadas-1] ->getCodigoReserva())) + 1);
+    cout << "Ingrese el metodo de pago: ";
+    getline(cin, metodoPago);
+    montoPago = (arregloAnfitriones[indiceAnfitrion] -> getAlojamiento(indiceAlojamiento) ->getPrecioNoche()) * estadiaNoches;
 
-unsigned short tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados){
-    string documento = "";
-    bool documentoValido = false;
-
-    while(!documentoValido){
-        cout << "Ingrese su numero de documento: ";
-        getline(cin, documento);
-
-        if((documento.length()) == 10){
-            documentoValido = true;
+    while(true){
+        Globales::contadorIteraciones++;
+        string respuesta = "";
+        cout << "Desea dejar alguna inquietud en su reserva? (S/N): ";
+        getline(cin, respuesta);
+        if(respuesta == "S"){
+            cout << "Escriba sus inquietudes: ";
+            getline(cin, inquietudes);
+            break;
+        } else if(respuesta == "N"){
+            break;
         } else {
-            cout << "Documento invalido. Asegurese que la longitud del documento sea diez" << endl;
-        }
-    }
-    //verificar si es anfitrion
-    for(unsigned short i = 0; i < anfitrionesCargados; i++){
-        if(arregloAnfitriones[i] != nullptr){
-            if((arregloAnfitriones[i] -> getDocumento()) == documento){
-                indice = i;
-                return '1';
-            }
+            cout << "Opcion invalida. Intente de nuevo" << endl;
         }
     }
 
-    //verificar si es huesped
-    for(unsigned short i = 0; i < huespedesCargados; i++){
-        if(arregloHuespedes[i] != nullptr){
-            if((arregloHuespedes[i] -> getDocumento()) == documento){
-                indice = i;
-                return '2';
-            }
-        }
-    }
-    return '3';
+    Reserva* nuevaReserva = new Reserva(codigoReserva, metodoPago, inquietudes, fechaEntrada, fechaPago = fechaEntrada.sumarDias(1), estadiaNoches, montoPago, huespedActual, arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento));
+    arregloReservasGlobales[reservasCargadas] = nuevaReserva;
+    huespedActual ->agregarReserva(nuevaReserva);
+    arregloAnfitriones[indiceAnfitrion] ->getAlojamiento(indiceAlojamiento) ->agregarReserva(nuevaReserva);
+
+    cout << "\n-------------- COMPROBANTE DE CONFIRMACION DE RESERVA --------------" << endl;
+    cout << "" << endl;
+    cout << "Codigo de la reserva: " << nuevaReserva ->getCodigoReserva() << endl;
+    cout << "Nombre del huesped: " << huespedActual ->getNombre() << endl;
+    cout << "Codigo alojamiento: " << nuevaReserva ->getAlojamiento() ->getCodigo() << endl;
+    cout << "Fecha de inicio: ";
+    nuevaReserva ->getFechaEntrada().fechaPalabras();
+    cout << "Fecha de finalizacion: ";
+    nuevaReserva ->getFechaFin().fechaPalabras();
+    cout << "---------------------------------------------------------------------" << endl;
+    reservasCargadas++;
+
+    return true;
 }
 
-Fecha crearFecha(const string &fechaStr){
-    if(fechaStr.empty()){
-        throw invalid_argument("Error: La fecha no puede estar vacia");
-    }
-    size_t inicio = 0;
-    const char delimitador = '-';
+size_t calcularMemoriaTotal(unsigned short anfitrionesCargados, unsigned short huespedesCargados, unsigned short reservasCargadas,
+                            Anfitrion** arregloAnfitriones, Huesped** arregloHuespedes, Reserva** arregloReservasGlobales,
+                            unsigned short capacidadAnfitriones, unsigned short capacidadHuespedes, unsigned short capacidadReservasGlobales) {
+    size_t total = 0;
 
-    unsigned char dia = 0;
-    unsigned char mes = 0;
-    unsigned short anio = 0;
-    try {
-        dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-        anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
-    } catch (const invalid_argument& excepcion) {
-        throw invalid_argument("Error en formato numerico: " + string(excepcion.what()));
-    } catch (const out_of_range& excepcion) {
-        throw out_of_range("Error en el valor numerico de la fecha (fuera de rango): " + string(excepcion.what()));
-    } catch (const exception& excepcion) {
-        throw runtime_error("Error inesperado al procesar la fecha: " + string(excepcion.what()));
+    //memoria del ARREGLO GLOBAL de anfitriones (todos los slots)
+    total += static_cast<size_t>(capacidadAnfitriones) * sizeof(Anfitrion*);
+
+    //memoria de cada anfitrion cargado (no nulo)
+    for (int i = 0; i < anfitrionesCargados; ++i) {
+        if (arregloAnfitriones[i]) {
+            total += arregloAnfitriones[i]->calcularMemoria();
+        }
     }
 
-    Fecha fechaCreada(dia, mes, anio);
-    return fechaCreada;
+    //memoria del ARREGLO GLOBAL de huespedes
+    total += static_cast<size_t>(capacidadHuespedes) * sizeof(Huesped*);
+
+    //memoria de cada huesped cargado (no nulo)
+    for (int i = 0; i < huespedesCargados; ++i) {
+        if (arregloHuespedes[i]) {
+            total += arregloHuespedes[i]->calcularMemoria();
+        }
+    }
+
+    //memoria del ARREGLO GLOBAL de reservas
+    total += static_cast<size_t>(capacidadReservasGlobales) * sizeof(Anfitrion*);
+
+    //memoria de cada reserva cargado (no nulo)
+    for (int i = 0; i < reservasCargadas; ++i) {
+        if (arregloReservasGlobales[i]) {
+            total += arregloReservasGlobales[i]->calcularMemoria();
+        }
+    }
+
+    return total;
 }
 
 //FUNCIONES DE BUSQUEDA
-short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes){
+short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &documento, unsigned short cantidadHuespedes, bool &encontrado){
     for(short i = 0; i < cantidadHuespedes; i++){
+        Globales::contadorIteraciones++;
         if((arregloHuespedes[i] -> getDocumento()) == documento){
+            encontrado = true;
             return i;
         }
     }
@@ -146,7 +166,9 @@ short buscarHuespedPorDocumento(Huesped**& arregloHuespedes, const string &docum
 
 bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &codigo, short cantidadAnfitriones, short &indiceAnfitrion, short &indiceAlojamiento){
     for(short i = 0; i < cantidadAnfitriones; i++){
+        Globales::contadorIteraciones++;
         for(short j = 0; j < (arregloAnfitriones[i] -> getAlojamientosCargados()); j++){
+            Globales::contadorIteraciones++;
             if((arregloAnfitriones[i] -> getAlojamiento(j) -> getCodigo()) == codigo){
                 indiceAnfitrion = i;
                 indiceAlojamiento = j;
@@ -157,16 +179,18 @@ bool buscarAlojamientoPorCodigo(Anfitrion**& arregloAnfitriones, const string &c
     return false;
 }
 
-void filtroReservas(Anfitrion **&arregloAnfitriones, const unsigned short &anfitrionesCargados, const string &municipio, const Fecha &fecha, const unsigned short &cantidadDeNoches,
-                    const unsigned short &costoMaximo = 0, const float &puntajeMinimo = 0, bool buscarPorCosto = false, bool buscarPorPuntaje = false)
+bool filtroReservas(Anfitrion **&arregloAnfitriones, const unsigned short &anfitrionesCargados, const string &municipio, const Fecha &fecha, const unsigned short &cantidadDeNoches,
+                    const unsigned int &costoMaximo = 0, const float &puntajeMinimo = 0, bool buscarPorCosto = false, bool buscarPorPuntaje = false)
 {
     bool alojamientoEncontradoYMostrado = false;
 
     for (unsigned short i = 0; i < anfitrionesCargados; i++) {
+        Globales::contadorIteraciones++;
         if (arregloAnfitriones[i] == nullptr) {
             continue;
         }
         for (unsigned short j = 0; j < arregloAnfitriones[i]->getAlojamientosCargados(); j++) {
+            Globales::contadorIteraciones++;
             Alojamiento *alojamientoActual = arregloAnfitriones[i]->getAlojamiento(j);
             if (alojamientoActual == nullptr) {
                 continue;
@@ -226,6 +250,115 @@ void filtroReservas(Anfitrion **&arregloAnfitriones, const unsigned short &anfit
                  << endl;
         }
     }
+
+    return alojamientoEncontradoYMostrado;
+}
+
+//FUNCIONES DE VALIDACION
+bool esDocumento(const string& linea, size_t& inicio){
+    bool documento = false;
+    char delimitador = ',';
+    size_t fin = linea.find(delimitador, inicio);
+    Globales::contadorFind++;
+    string identificador = linea.substr(inicio, fin - inicio);
+    Globales::contadorSubstr++;
+
+    Globales::contadorLength++;
+    if((identificador.length()) == 10){
+        documento = true;
+    }
+
+    return documento;
+}
+
+bool es_digito_manual(char c) {
+    return c >= '0' && c <= '9';
+}
+
+bool validarNumero(string &cadena){
+    size_t inicio_ = 0;
+
+    Globales::contadorLength++;
+    if (cadena.length() == inicio_) {
+        cout << "La entrada no puede estar vacia. Por favor, ingrese un numero." << endl;
+        return false;
+    } else {
+        for (size_t i = inicio_; i < cadena.length(); ++i) {
+            Globales::contadorLength++;
+            if (!es_digito_manual(cadena[i])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+unsigned short tipoUsuario(Huesped **&arregloHuespedes, Anfitrion **& arregloAnfitriones, unsigned short &indice, unsigned short anfitrionesCargados, unsigned short huespedesCargados){
+    string documento = "";
+    bool documentoValido = false;
+    bool encontrado = false;
+
+    while(!documentoValido){
+        Globales::contadorIteraciones++;
+        cout << "Ingrese su numero de documento: ";
+        getline(cin, documento);
+
+        Globales::contadorLength++;
+        if((documento.length()) == 10){
+            documentoValido = true;
+        } else {
+            cout << "Documento invalido. Asegurese que la longitud del documento sea diez" << endl;
+        }
+    }
+    //verificar si es anfitrion
+    for(unsigned short i = 0; i < anfitrionesCargados; i++){
+        Globales::contadorIteraciones++;
+        if(arregloAnfitriones[i] != nullptr){
+            if((arregloAnfitriones[i] -> getDocumento()) == documento){
+                indice = i;
+                return '1';
+            }
+        }
+    }
+
+    //verificar si es huesped
+    indice =  buscarHuespedPorDocumento(arregloHuespedes, documento, huespedesCargados, encontrado);
+    if(encontrado){
+        return '2';
+    }
+
+    //si no hallo nada
+    return '3';
+}
+
+Fecha crearFecha(const string &fechaStr){
+    if(fechaStr.empty()){
+        Globales::contadorEmpty++;
+        throw invalid_argument("Error: La fecha no puede estar vacia");
+    }
+    size_t inicio = 0;
+    const char delimitador = '-';
+
+    unsigned char dia = 0;
+    unsigned char mes = 0;
+    unsigned short anio = 0;
+    try {
+        dia = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        Globales::contadorStoi++;
+        mes = static_cast<unsigned char>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        Globales::contadorStoi++;
+        anio = static_cast<unsigned short>(stoi(obtenerDato(fechaStr, inicio, delimitador)));
+        Globales::contadorStoi++;
+    } catch (const invalid_argument& excepcion) {
+        throw invalid_argument("Formato de fecha incorrecto.");
+    } catch (const out_of_range& excepcion) {
+        throw out_of_range("Valores numericos fuera de rango.");
+    } catch (const exception& excepcion) {
+        throw runtime_error("Error inesperado al procesar la fecha.");
+    }
+
+    Fecha fechaCreada(dia, mes, anio);
+    return fechaCreada;
 }
 
 //FUNCIONES DE ORDENAMIENTO DE DATOS
@@ -240,9 +373,11 @@ void mezclar(Reserva** reservas, unsigned short izquierda, unsigned short medio,
 
     //copir datos a los arreglos temporales, son punteros, asi que aja
     for (unsigned short i = 0; i < n1; i++) {
+        Globales::contadorIteraciones++;
         izquierdaArr[i] = reservas[izquierda + i];
     }
     for (unsigned short j = 0; j < n2; j++) {
+        Globales::contadorIteraciones++;
         derechaArr[j] = reservas[medio + 1 + j];
     }
 
@@ -251,6 +386,7 @@ void mezclar(Reserva** reservas, unsigned short izquierda, unsigned short medio,
 
     //mezclar los subarreglos en el arreglo principal
     while (i < n1 && j < n2) {
+        Globales::contadorIteraciones++;
         if (izquierdaArr[i] -> getFechaEntrada() <= derechaArr[j] -> getFechaEntrada()) {
             reservas[k] = izquierdaArr[i];
             i++;
@@ -262,12 +398,14 @@ void mezclar(Reserva** reservas, unsigned short izquierda, unsigned short medio,
     }
     //copiar elementos restantes de izquierdaArr (si los hay)
     while (i < n1) {
+        Globales::contadorIteraciones++;
         reservas[k] = izquierdaArr[i];
         i++;
         k++;
     }
     //copiar elementos restantes de derechaArr (si los hay)
     while (j < n2) {
+        Globales::contadorIteraciones++;
         reservas[k] = derechaArr[j];
         j++;
         k++;

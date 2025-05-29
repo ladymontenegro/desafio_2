@@ -11,7 +11,8 @@ using namespace std;
 void menuAnfitrion(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva **arregloReservasGlobales, unsigned short &totalReservasGlobales, unsigned short anfitrionesCargados)
 {
     while (true) {
-        cout << "---MENU ANFITRIONES---" << endl;
+        Globales::contadorIteraciones++;
+        cout << "\n---MENU ANFITRIONES---" << endl;
         cout << "1. Anular una reservacion" << endl;
         cout << "2. Consultar reservaciones" << endl;
         cout << "3. Salir" << endl;
@@ -26,6 +27,7 @@ void menuAnfitrion(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, R
             if (opcion == "3") {
                 string fechaCorteStr = "";
                 while (true) {
+                    Globales::contadorIteraciones++;
                     cout << "Para salir por favor ingrese la fecha del dia de hoy (DD-MM-AAAA): ";
                     cin.ignore(1000, '\n');
                     getline(cin, fechaCorteStr);
@@ -46,6 +48,7 @@ void menuAnfitrion(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, R
                 break;
             } else if (opcion == "1") {
                 while (true) {
+                    Globales::contadorIteraciones++;
                     opcion1(anfitrionActual, arregloAnfitriones, arregloReservasGlobales, totalReservasGlobales, anfitrionesCargados);
                     cout << "Desea anular otra reserva? (y/n): ";
                     string continuarAnulando;
@@ -80,6 +83,7 @@ void opcion1(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva
         return;
     }
     for (unsigned short i = 0; i < anfitrionActual->getAlojamientosCargados(); ++i) {
+        Globales::contadorIteraciones++;
         anfitrionActual->getAlojamiento(i)->mostrarAlojamiento();
     }
 
@@ -90,6 +94,7 @@ void opcion1(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva
 
     Alojamiento *alojamientoEncontrado = nullptr;
     for (unsigned short i = 0; i < anfitrionActual->getAlojamientosCargados(); ++i) {
+        Globales::contadorIteraciones++;
         Alojamiento *currentAlojamiento = anfitrionActual->getAlojamiento(i);
         if (currentAlojamiento != nullptr
             && currentAlojamiento->getCodigo() == codigoAlojamientoSeleccionado) {
@@ -113,6 +118,7 @@ void opcion1(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva
     cout << "\n--- Sus reservas para el alojamiento '" << alojamientoEncontrado->getCodigo()
          << "' ---" << endl;
     for (unsigned short j = 0; j < alojamientoEncontrado->getReservasCargadas(); ++j) {
+        Globales::contadorIteraciones++;
         Reserva **reservasAlojamiento = alojamientoEncontrado->getReservas();
         if (reservasAlojamiento != nullptr && reservasAlojamiento[j] != nullptr) {
             reservasAlojamiento[j]->mostrarReserva();
@@ -124,6 +130,7 @@ void opcion1(Anfitrion *anfitrionActual, Anfitrion** arregloAnfitriones, Reserva
 
     cout << endl;
     while(!eliminada){
+        Globales::contadorIteraciones++;
         cout << "\nEscriba por favor el codigo de la reserva que desea anular: ";
         cin >> codigoReservaAnular;
         eliminada = eliminarReservaTodos(codigoReservaAnular, arregloReservasGlobales, totalReservasGlobales);
@@ -147,6 +154,7 @@ void opcion2(Anfitrion* anfitrionActual)
 
     // Iterar sobre cada alojamiento del anfitrion
     for (unsigned short i = 0; i < anfitrionActual->getAlojamientosCargados(); ++i) {
+        Globales::contadorIteraciones++;
         Alojamiento *currentAlojamiento = anfitrionActual->getAlojamiento(i);
 
         if (currentAlojamiento != nullptr) {
@@ -162,6 +170,7 @@ void opcion2(Anfitrion* anfitrionActual)
             } else {
                 Reserva **reservasDelAlojamiento = currentAlojamiento->getReservas();
                 for (unsigned short j = 0; j < currentAlojamiento->getReservasCargadas(); ++j) {
+                    Globales::contadorIteraciones++;
                     if (reservasDelAlojamiento != nullptr && reservasDelAlojamiento[j] != nullptr) {
                         reservasDelAlojamiento[j]->mostrarReserva();
                     }

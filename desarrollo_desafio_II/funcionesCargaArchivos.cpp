@@ -12,6 +12,7 @@ void guardarReservasEnArchivo(Anfitrion** arregloAnfitriones, unsigned short anf
 
     //recorrer todos los anfitriones
     for (unsigned short i = 0; i < anfitrionesCargados; i++) {
+        Globales::contadorIteraciones++;
         Anfitrion* anfitrion = arregloAnfitriones[i];
         Alojamiento** alojamientos = anfitrion -> getAlojamientos();
 
@@ -19,6 +20,7 @@ void guardarReservasEnArchivo(Anfitrion** arregloAnfitriones, unsigned short anf
 
         //recorrer cada alojamiento del anfitrion
         for (unsigned short j = 0; j < numAlojamientos; j++) {
+            Globales::contadorIteraciones++;
             Alojamiento* alojamiento = alojamientos[j];
             ordenarReservasDeAlojamiento(alojamiento);
 
@@ -30,6 +32,7 @@ void guardarReservasEnArchivo(Anfitrion** arregloAnfitriones, unsigned short anf
 
             //escribir cada reserva ordenada
             for (unsigned short k = 0; k < reservasCargadas; k++) {
+                Globales::contadorIteraciones++;
                 archivo << reservas[k] -> reservaString() << endl;
             }
         }
@@ -44,25 +47,30 @@ void moverReservasHistoricas(Fecha fechaActual, Reserva** reservasGlobales, unsi
     Reserva** historicas = new Reserva*[reservasCargadas];
 
     for (unsigned short i = 0; i < reservasCargadas; i++) {
+        Globales::contadorIteraciones++;
         if (reservasGlobales[i] -> getFechaFin() < fechaActual) {
             historicas[contadorHistoricas] = reservasGlobales[i];
             contadorHistoricas++;
         }
     }
 
-    //ordenar por fechas las reservas
-    mergeSort(historicas, 0, contadorHistoricas - 1);
+    if(contadorHistoricas != 0){
+        //ordenar por fechas las reservas
+        mergeSort(historicas, 0, contadorHistoricas - 1);
 
-    //escribir en el archivo con modo append pa que se agreguen al final
-    ofstream archivo("C:/Users/DELL/Documents/universidad/segundo_semestre/informatica_II/prueba_desafio_II/reservas_historicas.txt", ios::app);
-    for (unsigned short i = 0; i < contadorHistoricas; i++) {
-        archivo << historicas[i] -> getAlojamiento() -> getCodigo() << "," << historicas[i] -> reservaString() << endl;
-    }
-    archivo.close();
+        //escribir en el archivo con modo append pa que se agreguen al final
+        ofstream archivo("C:/Users/DELL/Documents/universidad/segundo_semestre/informatica_II/prueba_desafio_II/reservas_historicas.txt", ios::app);
+        for (unsigned short i = 0; i < contadorHistoricas; i++) {
+            Globales::contadorIteraciones++;
+            archivo << historicas[i] -> getAlojamiento() -> getCodigo() << "," << historicas[i] -> reservaString() << endl;
+        }
+        archivo.close();
 
-    //eliminar las reservas movidas al historico en los arreglos de cada clase que lo tiene
-    for (unsigned short i = 0; i < contadorHistoricas; i++) {
-        bool reservaEliminada = eliminarReservaTodos((historicas[i] -> getCodigoReserva()), reservasGlobales, reservasCargadas);
+        //eliminar las reservas movidas al historico en los arreglos de cada clase que lo tiene
+        for (unsigned short i = 0; i < contadorHistoricas; i++) {
+            Globales::contadorIteraciones++;
+            bool reservaEliminada = eliminarReservaTodos((historicas[i] -> getCodigoReserva()), reservasGlobales, reservasCargadas);
+        }
     }
 
     //libero la memoria del arrerglo temporal

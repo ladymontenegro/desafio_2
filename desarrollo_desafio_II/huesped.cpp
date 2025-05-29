@@ -13,11 +13,7 @@ Huesped::Huesped(const string &_nombre,
     , capacidadReservas(20)
     , reservasCargadas(0)
 {
-    reservas = new Reserva *[capacidadReservas];
-    for (unsigned short i = 0; i < capacidadReservas; i++) {
-
-        reservas[i] = nullptr;
-    }
+    reservas = new Reserva *[capacidadReservas]();
 }
 
 Huesped::Huesped(const Huesped &otro)
@@ -28,34 +24,40 @@ Huesped::Huesped(const Huesped &otro)
     , capacidadReservas(otro.capacidadReservas)
     , reservasCargadas(otro.reservasCargadas)
 {
-    reservas = new Reserva *[capacidadReservas];
+    reservas = new Reserva *[capacidadReservas]();
 
     for (unsigned short i = 0; i < reservasCargadas; ++i) {
-
+        Globales::contadorIteraciones++;
         if (otro.reservas[i] != nullptr) {
             reservas[i] = new Reserva(*(otro.reservas[i]));
         } else {
             reservas[i] = nullptr;
         }
     }
-
-    for (unsigned short i = reservasCargadas; i < capacidadReservas; ++i) {
-
-        reservas[i] = nullptr;
-    }
 }
 
 Huesped::~Huesped()
 {
     for (short i = 0; i < reservasCargadas; ++i) {
-
+        Globales::contadorIteraciones++;
         if (reservas[i] != nullptr) {
-            delete reservas[i];
             reservas[i] = nullptr;
         }
     }
     delete[] reservas;
     reservas = nullptr;
+}
+
+size_t Huesped::calcularMemoria() const {
+    size_t total = sizeof(*this);
+
+    // Solo suma el ARREGLO DE PUNTEROS (todos los slots)
+    if (reservas) {
+        total += static_cast<size_t>(capacidadReservas) * sizeof(Reserva*);
+    }
+
+    // ¡NO suma objetos Reserva! Son referencias, no ownership
+    return total;
 }
 
 // Metodos get
@@ -120,13 +122,13 @@ void Huesped::setReservas(Reserva **_reservas)
 void Huesped::eliminarReserva(string _codigoReserva)
 {
     for (unsigned short i = 0; i < reservasCargadas; i++) {
-
+        Globales::contadorIteraciones++;
         if (reservas[i] != nullptr) {
             if (reservas[i]->getCodigoReserva() == _codigoReserva) {
                 reservas[i] = nullptr;
                 if (i != reservasCargadas - 1) {
                     for (unsigned short j = i; j < reservasCargadas - 1; j++) {
-                
+                        Globales::contadorIteraciones++;
                         reservas[j] = reservas[j + 1];
                     }
                     reservas[reservasCargadas - 1] = nullptr;
@@ -150,12 +152,12 @@ void Huesped::agregarReserva(Reserva *nuevaReserva)
         Reserva **nuevoArreglo = new Reserva *[nuevaCapacidad];
 
         for (int i = 0; i < reservasCargadas; i++) {
-    
+            Globales::contadorIteraciones++;
             nuevoArreglo[i] = reservas[i];
         }
 
         for (int i = reservasCargadas; i < nuevaCapacidad; i++) {
-    
+            Globales::contadorIteraciones++;
             nuevoArreglo[i] = nullptr;
         }
         delete[] reservas;
@@ -171,6 +173,7 @@ void Huesped::mostrarReservas()
 {
     cout << "\n--- Reservas Vigentes ---";
     for (unsigned short i = 0; i < reservasCargadas; i++) {
+        Globales::contadorIteraciones++;
         cout << "-------------------------------------";
         reservas[i]->mostrarReserva();
     }

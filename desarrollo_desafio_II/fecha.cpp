@@ -7,9 +7,7 @@ using namespace std;
 Fecha::Fecha(unsigned char _dia, unsigned char _mes, unsigned short _anio)
     : dia(_dia), mes(_mes), anio(_anio)
 {
-    if (!validacionFecha()) {
-        cout << "La fecha ingresada no es valida. Por favor, reingrese la fecha:" << endl;
-    }
+    validacionFecha();
 }
 
 //constructor por defecto
@@ -71,7 +69,7 @@ void Fecha::fechaPalabras()
     // Formula
     int h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 - 2 * j) % 7;
 
-    // Mapeo del resultado a los nombres de los días de la semana
+    // Mapeo del resultado a los nombres de los dias de la semana
     static const string nombresDias[7]
         = {"Sabado", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"};
 
@@ -124,15 +122,15 @@ Fecha Fecha::sumarDias(unsigned int diasASumar)
         unsigned int diasRestantesEnMes = diasMaximosMesActual - nuevoDia;
 
         if (diasASumar <= diasRestantesEnMes) {
-            // Si los días a sumar caben en el mes actual
+            // Si los dias a sumar caben en el mes actual
             nuevoDia += diasASumar;
-            diasASumar = 0; // Se sumaron todos los días
+            diasASumar = 0; // Se sumaron todos los dias
         } else {
-            // Si los días a sumar exceden el mes actual
+            // Si los dias a sumar exceden el mes actual
             diasASumar
                 -= (diasRestantesEnMes
-                    + 1); // Resta los días que quedan mas el dia actual (para pasar al 1 del sig. mes)
-            nuevoDia = 1; // El día se convierte en el 1 del siguiente mes
+                    + 1); // Resta los dias que quedan mas el dia actual (para pasar al 1 del sig. mes)
+            nuevoDia = 1; // El dia se convierte en el 1 del siguiente mes
 
             // Avanzar al siguiente mes
             nuevoMes++;
@@ -157,35 +155,36 @@ bool Fecha::esBisiesto(unsigned short _anio)
     }
 }
 
-bool Fecha::validacionFecha()
+void Fecha::validacionFecha()
 {
-    unsigned char _dia = dia;
-    unsigned char _mes = mes;
-    unsigned short _anio = anio;
-
     unsigned char diasEnMeses[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    if (_mes == 0 || _mes > 12)
-        return false;
-
-    if (_dia == 0 || _dia > 31)
-        return false;
-
-    if (_mes == 2) {
-        if (esBisiesto(_anio)) {
-            if (_dia > 29)
-                return false;
-        } else {
-            if (_dia > 28)
-                return false;
-        }
-    } else {
-        if (_dia > diasEnMeses[_mes]) {
-            return false;
-        }
+    if (anio < 2025 || anio > 2100) {
+        throw invalid_argument("El anio ingresado no es valido (ej. 1900-2100).");
     }
 
-    return true;
+    if (mes == 0 || mes > 12) {
+        throw invalid_argument("El mes ingresado no es valido (1-12).");
+    }
+
+    if (dia == 0 || dia > 31) {
+        throw invalid_argument("El dia ingresado no es valido (1-31).");
+    }
+
+    if (mes == 2) { // Febrero
+        if (esBisiesto(anio)) {
+            if (dia > 29) {
+                throw invalid_argument("El dia ingresado es invalido para febrero en anio bisiesto (1-29).");
+            }
+        } else {
+            if (dia > 28) {
+                throw invalid_argument("El dia ingresado es invalido para febrero en anio no bisiesto (1-28).");
+            }
+        }
+    } else {
+        if (dia > diasEnMeses[mes]) {
+            throw invalid_argument("El dia ingresado excede el limite de dias para el mes especificado.");
+        }
+    }
 }
 
 bool Fecha::operator==(const Fecha &_fecha) const
@@ -247,6 +246,7 @@ bool Fecha::operator<(const Fecha &_fecha) const
 
 string Fecha::fechaString()
 {
+    Globales::contadorTo_String+=3;
     return to_string(dia) + "-" + to_string(mes) + "-" + to_string(anio);
 }
 
